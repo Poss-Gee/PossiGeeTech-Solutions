@@ -26,7 +26,7 @@ export async function POST(req: Request) {
                 from: "PossiGeeTech <onboarding@resend.dev>",
                 to: [email],
                 subject: "Welcome to PossiGeeTech Solutions!",
-                react: WelcomeEmailTemplate({ email }),
+                react: <WelcomeEmailTemplate email={email} />,
             });
         } catch (emailError) {
             console.error("Welcome email failed:", emailError);

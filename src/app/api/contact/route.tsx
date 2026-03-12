@@ -36,13 +36,15 @@ export async function POST(req: Request) {
                 from: "PossiGeeTech <onboarding@resend.dev>",
                 to: ["myfake.possigee@gmail.com"],
                 subject: `🚀 New Project Inquiry: ${projectType} from ${name}`,
-                react: ContactEmailTemplate({
-                    name,
-                    email,
-                    phone,
-                    projectType,
-                    message,
-                }),
+                react: (
+                    <ContactEmailTemplate
+                        name={name}
+                        email={email}
+                        phone={phone}
+                        projectType={projectType}
+                        message={message}
+                    />
+                ),
             });
         } catch (emailError) {
             console.error("Email sending failed:", emailError);
