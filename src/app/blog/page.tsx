@@ -5,70 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Calendar, User, ArrowRight, Mail, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
-
-// Mock blog data
-const mockBlogPosts = [
-    {
-        id: "1",
-        title: "10 Essential UI/UX Principles for Modern Web Apps",
-        excerpt: "Discover the core principles that separate good interfaces from great ones. Learn how typography, spacing, and psychology impact user behavior.",
-        category: "Design",
-        date: "Oct 12, 2026",
-        author: "Ofori Michael",
-        readTime: "5 min read",
-        slug: "essential-ui-ux-principles"
-    },
-    {
-        id: "2",
-        title: "Why Next.js App Router is the Future of Full-Stack",
-        excerpt: "An in-depth look at Server Components, API routes, and how the App Router simplifies complex full-stack web development workflows.",
-        category: "Development",
-        date: "Oct 05, 2026",
-        author: "Tech Team",
-        readTime: "8 min read",
-        slug: "nextjs-app-router-future"
-    },
-    {
-        id: "3",
-        title: "Maximizing ROI with Data-Driven Digital Marketing",
-        excerpt: "Stop guessing and start measuring. Here's how to implement analytics tracking that actually translates into actionable business insights.",
-        category: "Marketing",
-        date: "Sep 28, 2026",
-        author: "Sarah Jenkins",
-        readTime: "6 min read",
-        slug: "data-driven-digital-marketing"
-    },
-    {
-        id: "4",
-        title: "The Rise of AI in Customer Experience",
-        excerpt: "How artificial intelligence is reshaping the way businesses interact with their customers, from chatbots to predictive personalization.",
-        category: "Technology",
-        date: "Sep 15, 2026",
-        author: "Ofori Michael",
-        readTime: "7 min read",
-        slug: "ai-customer-experience"
-    },
-    {
-        id: "5",
-        title: "Migrating from monolith to microservices: A case study",
-        excerpt: "Learn from our experience helping a logistics enterprise safely transition their legacy system to a modern microservices architecture.",
-        category: "Case Study",
-        date: "Sep 02, 2026",
-        author: "Engineering",
-        readTime: "10 min read",
-        slug: "monolith-to-microservices-case-study"
-    },
-    {
-        id: "6",
-        title: "Secure by Design: Best practices for Web Applications",
-        excerpt: "Security shouldn't be an afterthought. Discover the fundamental security practices every developer should integrate from day one.",
-        category: "Security",
-        date: "Aug 20, 2026",
-        author: "Tech Team",
-        readTime: "6 min read",
-        slug: "secure-by-design-practices"
-    }
-];
+import { mockBlogPosts } from "@/lib/constants";
 
 export default function BlogListing() {
     const [posts, setPosts] = useState<any[]>([]);

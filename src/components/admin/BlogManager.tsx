@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Plus, Edit2, Trash2, Loader2, X, Save, Image as ImageIcon, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import Toast from "@/components/ui/Toast";
+import { mockBlogPosts } from "@/lib/constants";
 
 interface BlogPost {
     _id: string;
@@ -44,7 +45,14 @@ export default function BlogManager() {
             const res = await fetch("/api/blog");
             const data = await res.json();
             if (data.success) {
-                setPosts(data.data);
+                const realPosts = data.data || [];
+                // Merge mock posts that don't exist in DB by title
+                const merged = [...realPosts, ...mockBlogPosts.filter(m => !realPosts.find((r: any) => r.title === m.title)).map(m => ({
+                    ...m,
+                    _id: m.id, // Use mock ID as _id
+                    createdAt: new Date().toISOString() // Placeholder
+                }))];
+                setPosts(merged);
             }
         } catch (error) {
             console.error("Failed to fetch posts:", error);
@@ -115,6 +123,8 @@ export default function BlogManager() {
             readTime: post.readTime,
             imageUrl: post.imageUrl || ""
         });
+        // If it's a mock post, we treat it as a new post when saving
+        setEditingId(post._id.startsWith('mock-') ? null : post._id);
         setIsAdding(true);
     };
 
