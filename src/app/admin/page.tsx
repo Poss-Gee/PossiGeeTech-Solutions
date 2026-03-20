@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { MessageSquare, Mail, Briefcase, Users, Settings, LogOut, Clock, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { MessageSquare, Mail, Briefcase, Users, Settings, LogOut, Clock, Loader2, CheckCircle2, AlertCircle, Newspaper } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import BlogManager from "@/components/admin/BlogManager";
@@ -93,7 +93,7 @@ export default function AdminDashboard() {
                         onClick={() => setActiveView("blog")}
                         className={`flex items-center gap-3 w-full px-4 py-3 font-semibold rounded-md transition-colors cursor-pointer ${activeView === "blog" ? "bg-[#EAB308] text-black" : "text-gray-400 hover:text-white hover:bg-white/10"}`}
                     >
-                        <Mail className="w-5 h-5" />
+                        <Newspaper className="w-5 h-5" />
                         Blog
                     </button>
                     <button 

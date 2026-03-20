@@ -1,18 +1,65 @@
-"use client";
-
-import { useState } from "react";
-import { Settings, Globe, Bell, Shield, Save, Mail, MessageSquare } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Globe, Bell, Shield, Save, Loader2 } from "lucide-react";
+import Toast from "@/components/ui/Toast";
 
 export default function SettingsManager() {
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
     const [settings, setSettings] = useState({
         siteName: "PossiGeeTech Solutions",
         contactEmail: "info@possigeetech.com",
         supportPhone: "+233 555 123 456",
         maintenanceMode: false,
         emailNotifications: true,
-        newsletterSync: true
+        newsletterSync: true,
+        logoUrl: "/images/logo.png"
     });
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const res = await fetch("/api/admin/settings");
+                const data = await res.json();
+                if (data.success) {
+                    setSettings(data.data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch settings:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchSettings();
+    }, []);
+
+    const handleSave = async () => {
+        setSaving(true);
+        try {
+            const res = await fetch("/api/admin/settings", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(settings),
+            });
+            if (res.ok) {
+                setToast({ message: "Settings saved successfully", type: "success" });
+            } else {
+                setToast({ message: "Failed to save settings", type: "error" });
+            }
+        } catch (error) {
+            setToast({ message: "Error saving settings", type: "error" });
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="flex justify-center py-20">
+                <Loader2 className="w-10 h-10 text-[#EAB308] animate-spin" />
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-8">
@@ -60,6 +107,15 @@ export default function SettingsManager() {
                                     />
                                 </div>
                             </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-gray-400">Logo URL</label>
+                                <input 
+                                    type="text" 
+                                    value={settings.logoUrl}
+                                    onChange={(e) => setSettings({...settings, logoUrl: e.target.value})}
+                                    className="w-full bg-white/5 border border-white/10 rounded-md px-4 py-3 text-white focus:outline-none focus:border-[#EAB308]"
+                                />
+                            </div>
                         </div>
                     </div>
 
@@ -79,7 +135,7 @@ export default function SettingsManager() {
                                     type="checkbox" 
                                     checked={settings.emailNotifications}
                                     onChange={(e) => setSettings({...settings, emailNotifications: e.target.checked})}
-                                    className="w-6 h-6 accent-[#EAB308] bg-transparent border-white/10 rounded"
+                                    className="w-6 h-6 accent-[#EAB308] bg-transparent border-white/10 rounded cursor-pointer"
                                 />
                             </div>
                             <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/5">
@@ -91,7 +147,7 @@ export default function SettingsManager() {
                                     type="checkbox" 
                                     checked={settings.newsletterSync}
                                     onChange={(e) => setSettings({...settings, newsletterSync: e.target.checked})}
-                                    className="w-6 h-6 accent-[#EAB308] bg-transparent border-white/10 rounded"
+                                    className="w-6 h-6 accent-[#EAB308] bg-transparent border-white/10 rounded cursor-pointer"
                                 />
                             </div>
                         </div>
@@ -121,12 +177,24 @@ export default function SettingsManager() {
                         </div>
                     </div>
 
-                    <button className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-[#EAB308] text-black font-extrabold rounded-xl hover:bg-[#CA8A04] transition-all shadow-xl shadow-[#EAB308]/10 group">
-                        <Save className="w-5 h-5 transition-transform group-hover:scale-110" />
-                        Save All Changes
+                    <button 
+                        onClick={handleSave}
+                        disabled={saving}
+                        className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-[#EAB308] text-black font-extrabold rounded-xl hover:bg-[#CA8A04] transition-all shadow-xl shadow-[#EAB308]/10 group disabled:opacity-50"
+                    >
+                        {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5 transition-transform group-hover:scale-110" />}
+                        {saving ? "Saving..." : "Save All Changes"}
                     </button>
                 </div>
             </div>
+
+            {toast && (
+                <Toast 
+                    message={toast.message} 
+                    type={toast.type} 
+                    onClose={() => setToast(null)} 
+                />
+            )}
         </div>
     );
 }
