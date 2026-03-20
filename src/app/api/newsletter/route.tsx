@@ -6,6 +6,16 @@ import { WelcomeEmailTemplate } from "@/components/emails/WelcomeEmailTemplate";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+export async function GET() {
+    try {
+        await dbConnect();
+        const subscribers = await Subscriber.find({}).sort({ createdAt: -1 });
+        return NextResponse.json({ success: true, data: subscribers });
+    } catch (error: any) {
+        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    }
+}
+
 export async function POST(req: Request) {
     try {
         await dbConnect();

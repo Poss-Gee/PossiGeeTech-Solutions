@@ -17,8 +17,51 @@ const mockUsers: AdminUser[] = [
 ];
 
 export default function UsersManager() {
-    const [users, setUsers] = useState<AdminUser[]>(mockUsers);
-    const [loading, setLoading] = useState(false);
+    const [users, setUsers] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+
+    const fetchUsers = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch("/api/users");
+            const data = await res.json();
+            if (data.success) {
+                setUsers(data.data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch users:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchUsers();
+    }, []);
+
+    const handleDelete = async (id: string, isMock?: boolean) => {
+        if (id === "1") {
+            setToast({ message: "Cannot delete the primary admin", type: "error" });
+            return;
+        }
+        if (isMock) {
+            setUsers(users.filter(u => u._id !== id));
+            setToast({ message: "Mock user removed locally", type: "success" });
+            return;
+        }
+        if (!confirm("Are you sure?")) return;
+        
+        try {
+            const res = await fetch(`/api/users/${id}`, { method: "DELETE" });
+            if (res.ok) {
+                setToast({ message: "User removed", type: "success" });
+                fetchUsers();
+            }
+        } catch (error) {
+            setToast({ message: "Failed to delete user", type: "error" });
+        }
+    };
 
     return (
         <div className="space-y-8">
@@ -48,8 +91,8 @@ export default function UsersManager() {
                             <tr key={user.id} className="hover:bg-white/5 transition-colors text-white">
                                 <td className="px-6 py-4">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center border border-white/20">
-                                            {user.name.charAt(0)}
+                                        <div className="w-10 h-10 rounded-full bg-[#EAB308]/10 flex items-center justify-center border border-[#EAB308]/20 text-[#EAB308] font-bold">
+                                            {user.name?.charAt(0) || "U"}
                                         </div>
                                         <div>
                                             <div className="font-semibold">{user.name}</div>
@@ -71,7 +114,12 @@ export default function UsersManager() {
                                 <td className="px-6 py-4 text-right">
                                     <div className="flex justify-end gap-3">
                                         <button className="p-2 hover:text-[#EAB308] transition-colors"><Edit2 className="w-4 h-4" /></button>
-                                        {user.id !== "1" && <button className="p-2 hover:text-red-500 transition-colors"><Trash2 className="w-4 h-4" /></button>}
+                                        <button 
+                                            onClick={() => handleDelete(user._id, user.id === "1" || user._id === "1")}
+                                            className="p-2 hover:text-red-500 transition-colors"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
