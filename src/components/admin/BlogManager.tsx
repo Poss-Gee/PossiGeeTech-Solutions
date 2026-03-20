@@ -122,13 +122,18 @@ export default function BlogManager({ demoMode = false }: { demoMode?: boolean }
         setIsAdding(true);
     };
 
-    if (loading && posts.length === 0) {
-        return (
-            <div className="flex justify-center py-20">
-                <Loader2 className="w-10 h-10 text-[#EAB308] animate-spin" />
-            </div>
-        );
-    }
+    const displayPosts = posts.length > 0 ? posts : (demoMode ? mockBlogPosts.map(m => ({
+        _id: m.id,
+        title: m.title,
+        excerpt: m.excerpt,
+        content: m.content || "",
+        category: m.category,
+        author: m.author,
+        readTime: m.readTime,
+        slug: m.slug,
+        imageUrl: m.imageUrl,
+        createdAt: m.date
+    })) : []);
 
     return (
         <div className="space-y-8">
@@ -273,30 +278,8 @@ export default function BlogManager({ demoMode = false }: { demoMode?: boolean }
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[#333] text-sm">
-                            {(posts.length > 0 ? posts : (demoMode ? mockBlogPosts.map(m => ({
-                                _id: m.id,
-                                title: m.title,
-                                excerpt: m.excerpt,
-                                content: m.content || "",
-                                category: m.category,
-                                author: m.author,
-                                readTime: m.readTime,
-                                slug: m.slug,
-                                imageUrl: m.imageUrl,
-                                createdAt: m.date
-                            })) : [])).length > 0 ? (
-                                (posts.length > 0 ? posts : (demoMode ? mockBlogPosts.map(m => ({
-                                    _id: m.id,
-                                    title: m.title,
-                                    excerpt: m.excerpt,
-                                    content: m.content || "",
-                                    category: m.category,
-                                    author: m.author,
-                                    readTime: m.readTime,
-                                    slug: m.slug,
-                                    imageUrl: m.imageUrl,
-                                    createdAt: m.date
-                                })) : [])).map((post: any) => (
+                            {displayPosts.length > 0 ? (
+                                displayPosts.map((post: any) => (
                                     <tr key={post._id} className="hover:bg-white/5 transition-colors text-white">
                                         <td className="px-6 py-4 font-medium max-w-[200px] truncate">{post.title}</td>
                                         <td className="px-6 py-4 text-center">
