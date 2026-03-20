@@ -9,4 +9,4 @@ const AdminUserSchema = new mongoose.Schema({
     inviteToken: { type: String }, // For first-time setup
 }, { timestamps: true });
 
-export default mongoose.models.AdminUser || mongoose.model("AdminUser", AdminUserSchema);
+export default mongoose.models.AdminUserV2 || mongoose.model("AdminUserV2", AdminUserSchema, "adminusers");
