@@ -26,7 +26,7 @@ export async function GET() {
         return NextResponse.json({ 
             success: false, 
             connected: false,
-            error: "Failed to connect to database" 
+            error: error.message || "Failed to connect to database" 
         }, { status: 500 });
     }
 }

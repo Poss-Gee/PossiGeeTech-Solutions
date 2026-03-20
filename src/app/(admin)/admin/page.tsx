@@ -32,7 +32,8 @@ export default function AdminDashboard() {
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [messages, setMessages] = useState<AdminMessage[]>([]);
     const [loading, setLoading] = useState(true);
-    const [connected, setConnected] = useState<boolean | null>(null); // null = unknown, false = error, true = connected
+    const [connected, setConnected] = useState<boolean | null>(null); 
+    const [errorMsg, setErrorMsg] = useState<string>("");
     const [selectedMessage, setSelectedMessage] = useState<AdminMessage | null>(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -48,12 +49,14 @@ export default function AdminDashboard() {
                     setMessages(data.messages || []);
                 } else {
                     setConnected(false);
+                    setErrorMsg(data.error || "Failed to connect to database");
                     setStats({ messages: 0, subscribers: 0, proposals: 0 });
                     setMessages([]);
                 }
-            } catch (error) {
+            } catch (error: any) {
                 console.error("Failed to fetch dashboard data:", error);
                 setConnected(false);
+                setErrorMsg(error.message || "An unexpected error occurred");
                 setStats({ messages: 0, subscribers: 0, proposals: 0 });
                 setMessages([]);
             } finally {
@@ -224,7 +227,8 @@ export default function AdminDashboard() {
                                 <AlertCircle className="w-5 h-5 animate-pulse" />
                                 <div className="flex-1">
                                     <p className="font-bold text-sm">Database Connection Failed (Production)</p>
-                                    <p className="text-xs text-red-300/80">Check your Vercel settings to ensure the <span className="font-mono bg-red-500/20 px-1 rounded">MONGODB_URI</span> environment variable is correctly set.</p>
+                                    <p className="text-xs text-red-300 mb-1">{errorMsg}</p>
+                                    <p className="text-xs text-red-300/60 font-medium italic">Check your Vercel settings for <span className="font-mono bg-red-500/20 px-1 rounded not-italic">MONGODB_URI</span>.</p>
                                 </div>
                             </div>
                         )}
