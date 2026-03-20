@@ -58,6 +58,7 @@ export default function AdminDashboard() {
     const [demoMode, setDemoMode] = useState(false);
     const [connected, setConnected] = useState<boolean | null>(null); 
     const [errorMsg, setErrorMsg] = useState<string>("");
+    const [debugData, setDebugData] = useState<{ dbName?: string; collections?: string[] } | null>(null);
     const [selectedMessage, setSelectedMessage] = useState<AdminMessage | null>(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -86,15 +87,17 @@ export default function AdminDashboard() {
                 const res = await fetch("/api/admin/stats");
                 const data = await res.json();
                 
-                if (data.success && data.connected) {
-                    setConnected(true);
+                if (data.success) {
                     setStats(data.stats);
                     setMessages(data.messages || []);
+                    setConnected(data.connected); // Set connected status based on API response
+                    setDebugData(data.debug || null); // Capture debug data
                 } else {
                     setConnected(false);
                     setErrorMsg(data.error || "Failed to connect to database");
                     setStats({ messages: 0, subscribers: 0, proposals: 0 });
                     setMessages([]);
+                    setDebugData(data.debug || null); // Still capture debug data even if not successful, for diagnostics
                 }
             } catch (error: any) {
                 console.error("Failed to fetch dashboard data:", error);
@@ -296,20 +299,33 @@ export default function AdminDashboard() {
                         )}
 
                         {connected === true && (stats?.messages === 0 && stats?.subscribers === 0) && !demoMode && (
-                            <div className="mb-8 p-4 bg-[#EAB308]/10 border border-[#EAB308]/20 rounded-xl flex items-center justify-between gap-3 text-[#EAB308]">
-                                <div className="flex items-center gap-3">
-                                    <CheckCircle2 className="w-5 h-5" />
-                                    <div className="flex-1">
-                                        <p className="font-bold text-sm">Database Connected (No Content Found)</p>
-                                        <p className="text-sm opacity-80">Your database is connected, but it's currently empty. Once you add real blogs or receive messages, they will appear here.</p>
+                            <div className="mb-8 p-6 bg-[#EAB308]/10 border border-[#EAB308]/20 rounded-xl flex flex-col gap-4 text-[#EAB308]">
+                                <div className="flex items-center justify-between gap-3">
+                                    <div className="flex items-center gap-3">
+                                        <CheckCircle2 className="w-5 h-5" />
+                                        <div className="flex-1">
+                                            <p className="font-bold text-sm">Database Connected (No Content Found)</p>
+                                            <p className="text-sm opacity-80">Your database is connected, but it's currently empty according to our models.</p>
+                                        </div>
                                     </div>
+                                    <button 
+                                        onClick={toggleDemoMode}
+                                        className="px-4 py-2 bg-[#EAB308]/20 hover:bg-[#EAB308]/30 border border-[#EAB308]/30 rounded-lg text-xs font-bold transition-all whitespace-nowrap"
+                                    >
+                                        Enable Demo Mode
+                                    </button>
                                 </div>
-                                <button 
-                                    onClick={toggleDemoMode}
-                                    className="px-4 py-2 bg-[#EAB308]/20 hover:bg-[#EAB308]/30 border border-[#EAB308]/30 rounded-lg text-xs font-bold transition-all whitespace-nowrap"
-                                >
-                                    Enable Demo Mode
-                                </button>
+                                
+                                <div className="mt-2 p-3 bg-black/20 rounded-lg border border-[#EAB308]/10 text-xs text-[#EAB308]/70">
+                                    <p className="font-bold mb-1 uppercase tracking-wider text-[10px]">Diagnostics Debug:</p>
+                                    <p>Connected to DB: <span className="font-mono text-white">{debugData?.dbName || 'Unknown'}</span></p>
+                                    <p className="mt-1">Collections found: {debugData?.collections?.length ? (
+                                        <span className="font-mono text-white">{debugData.collections.join(', ')}</span>
+                                    ) : (
+                                        <span className="italic text-red-400">None</span>
+                                    )}</p>
+                                    <p className="mt-2 text-[10px] italic">If the collections above aren't <span className="text-white">blogs, contacts, subscribers</span>, you are likely connected to the wrong database (like 'test').</p>
+                                </div>
                             </div>
                         )}
 

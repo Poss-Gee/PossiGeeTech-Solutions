@@ -14,15 +14,15 @@ interface MongooseCache {
 }
 
 declare global {
-    var mongoose: MongooseCache | undefined;
+    var _mongooseCache: MongooseCache | undefined;
 }
 
 // In Next.js (serverless environment), we need to cache the database connection
 // so that we don't create a new connection pool for every request.
-let cached = global.mongoose;
+let cached = global._mongooseCache;
 
 if (!cached) {
-    cached = global.mongoose = { conn: null, promise: null };
+    cached = global._mongooseCache = { conn: null, promise: null };
 }
 
 async function dbConnect() {
