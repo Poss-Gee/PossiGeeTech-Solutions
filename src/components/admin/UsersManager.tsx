@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { Users, UserPlus, Shield, Mail, Trash2, Edit2, Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
 import Toast from "@/components/ui/Toast";
 
 interface AdminUser {
     id: string;
+    _id?: string;
     name: string;
     email: string;
     role: "Admin" | "Editor";
@@ -65,14 +67,9 @@ export default function UsersManager() {
         }
     };
 
-    const handleDelete = async (id: string, isMock?: boolean) => {
-        if (id === "1") {
+    const handleDelete = async (id: string, isCanDelete: boolean = true) => {
+        if (!isCanDelete) {
             setToast({ message: "Cannot delete the primary admin", type: "error" });
-            return;
-        }
-        if (isMock) {
-            setUsers(users.filter(u => u._id !== id));
-            setToast({ message: "Mock user removed locally", type: "success" });
             return;
         }
         if (!confirm("Are you sure?")) return;
@@ -86,6 +83,8 @@ export default function UsersManager() {
         } catch (error) {
             setToast({ message: "Failed to delete user", type: "error" });
         }
+    };
+
     const startEdit = (user: any) => {
         setNewUser({ name: user.name, email: user.email, role: user.role });
         setShowInviteModal(true);
@@ -100,7 +99,10 @@ export default function UsersManager() {
                     <p className="text-gray-400 mt-1">Manage administrative access to the platform.</p>
                 </div>
                 <button 
-                    onClick={() => setShowInviteModal(true)}
+                    onClick={() => {
+                        setNewUser({ name: "", email: "", role: "Editor" });
+                        setShowInviteModal(true);
+                    }}
                     className="flex items-center gap-2 px-4 py-2 bg-[#EAB308] text-black font-bold rounded-md hover:bg-[#CA8A04] transition-colors"
                 >
                     <UserPlus className="w-5 h-5" />
@@ -152,7 +154,7 @@ export default function UsersManager() {
                                             <Edit2 className="w-4 h-4" />
                                         </button>
                                         <button 
-                                            onClick={() => handleDelete(user._id, user.id === "1" || user._id === "1")}
+                                            onClick={() => handleDelete(user._id || user.id, user.id !== "1" && user._id !== "1")}
                                             className="p-2 hover:text-red-500 transition-colors"
                                         >
                                             <Trash2 className="w-4 h-4" />
@@ -161,8 +163,17 @@ export default function UsersManager() {
                                 </td>
                             </tr>
                         ))}
+                        {users.length === 0 && !loading && (
+                            <tr>
+                                <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
+                                    No team members found.
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
+            </div>
+
             {showInviteModal && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
                     <motion.div 
@@ -198,8 +209,8 @@ export default function UsersManager() {
                                 <label className="text-sm font-medium text-gray-400">Role</label>
                                 <select 
                                     value={newUser.role}
-                                    onChange={(e) => setNewUser({...newUser, role: e.target.value})}
-                                    className="w-full bg-white/5 border border-white/10 rounded-md px-4 py-3 text-white focus:outline-none focus:border-[#EAB308]"
+                                    onChange={(e) => setNewUser({...newUser, role: e.target.value as any})}
+                                    className="w-full bg-[#1A1A1A] border border-white/10 rounded-md px-4 py-3 text-white focus:outline-none focus:border-[#EAB308]"
                                 >
                                     <option value="Editor">Editor</option>
                                     <option value="Admin">Admin</option>
