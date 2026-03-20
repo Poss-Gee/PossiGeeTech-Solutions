@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { mockBlogPosts } from "@/lib/constants";
 import { ArrowLeft, Calendar, User, Clock, Share2 } from "lucide-react";
+import ShareButton from "@/components/ShareButton";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;
@@ -102,10 +103,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                     <div className="text-gray-400 text-sm">
                         &copy; {new Date().getFullYear()} PossiGeeTech Solutions. All rights reserved.
                     </div>
-                    <button className="flex items-center gap-2 px-4 py-2 rounded-md bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all">
-                        <Share2 className="w-4 h-4" />
-                        Share Post
-                    </button>
+                    <ShareButton title={post.title} slug={post.slug} />
                 </footer>
             </div>
         </article>
