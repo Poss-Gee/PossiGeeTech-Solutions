@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Mail, Loader2, Search, Download, Trash2 } from "lucide-react";
+import Toast from "@/components/ui/Toast";
 
 interface Subscriber {
     _id: string;
@@ -13,6 +14,7 @@ export default function NewsletterManager() {
     const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
+    const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
     useEffect(() => {
         fetchSubscribers();
@@ -37,8 +39,12 @@ export default function NewsletterManager() {
         if (!confirm("Remove this subscriber?")) return;
         try {
             const res = await fetch(`/api/newsletter/${id}`, { method: "DELETE" });
-            if (res.ok) fetchSubscribers();
+            if (res.ok) {
+                setToast({ message: "Subscriber removed", type: "success" });
+                fetchSubscribers();
+            }
         } catch (error) {
+            setToast({ message: "Failed to remove subscriber", type: "error" });
             console.error("Failed to delete subscriber:", error);
         }
     };
@@ -138,6 +144,14 @@ export default function NewsletterManager() {
                     </tbody>
                 </table>
             </div>
+
+            {toast && (
+                <Toast 
+                    message={toast.message} 
+                    type={toast.type} 
+                    onClose={() => setToast(null)} 
+                />
+            )}
         </div>
     );
 }

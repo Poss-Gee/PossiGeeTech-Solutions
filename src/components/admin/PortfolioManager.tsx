@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Plus, Edit2, Trash2, Loader2, X, Save, Image as ImageIcon } from "lucide-react";
+import Toast from "@/components/ui/Toast";
 
 interface Project {
     _id: string;
@@ -29,6 +30,7 @@ export default function PortfolioManager() {
         liveUrl: "",
         sourceUrl: ""
     });
+    const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
     useEffect(() => {
         fetchProjects();
@@ -68,6 +70,7 @@ export default function PortfolioManager() {
             });
             
             if (res.ok) {
+                setToast({ message: editingId ? "Project updated!" : "Project added to portfolio!", type: "success" });
                 setIsAdding(false);
                 setEditingId(null);
                 setFormData({
@@ -82,6 +85,7 @@ export default function PortfolioManager() {
                 fetchProjects();
             }
         } catch (error) {
+            setToast({ message: "Something went wrong. Please try again.", type: "error" });
             console.error("Failed to save project:", error);
             setLoading(false);
         }
@@ -93,6 +97,7 @@ export default function PortfolioManager() {
         try {
             const res = await fetch(`/api/portfolio/${id}`, { method: "DELETE" });
             if (res.ok) {
+                setToast({ message: "Project removed", type: "success" });
                 fetchProjects();
             }
         } catch (error) {
@@ -188,30 +193,49 @@ export default function PortfolioManager() {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-400">Image Path/URL</label>
-                                <div className="flex gap-2">
-                                    <input 
-                                        type="text" 
-                                        value={formData.imageUrl}
-                                        onChange={(e) => setFormData({...formData, imageUrl: e.target.value})}
-                                        className="flex-1 bg-white/5 border border-white/10 rounded-md px-4 py-2 text-white focus:outline-none focus:border-[#EAB308]"
-                                        placeholder="/images/project.jpg"
-                                    />
-                                    <div className="bg-white/5 p-2 rounded-md border border-white/10">
-                                        <ImageIcon className="w-6 h-6 text-gray-400" />
+                            <div className="space-y-4">
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-gray-400">Featured Image URL</label>
+                                    <div className="relative">
+                                        <ImageIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                                        <input 
+                                            type="url" 
+                                            value={formData.imageUrl}
+                                            onChange={(e) => setFormData({...formData, imageUrl: e.target.value})}
+                                            className="w-full bg-white/5 border border-white/10 rounded-md pl-10 pr-4 py-2 text-white focus:outline-none focus:border-[#EAB308]"
+                                            placeholder="https://example.com/project.jpg"
+                                        />
                                     </div>
                                 </div>
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-gray-400">Live Preview URL</label>
+                                    <input 
+                                        type="url" 
+                                        value={formData.liveUrl}
+                                        onChange={(e) => setFormData({...formData, liveUrl: e.target.value})}
+                                        className="w-full bg-white/5 border border-white/10 rounded-md px-4 py-2 text-white focus:outline-none focus:border-[#EAB308]"
+                                        placeholder="https://example.com"
+                                    />
+                                </div>
                             </div>
+                            
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-400">Live Preview URL</label>
-                                <input 
-                                    type="text" 
-                                    value={formData.liveUrl}
-                                    onChange={(e) => setFormData({...formData, liveUrl: e.target.value})}
-                                    className="w-full bg-white/5 border border-white/10 rounded-md px-4 py-2 text-white focus:outline-none focus:border-[#EAB308]"
-                                    placeholder="https://example.com"
-                                />
+                                <label className="text-sm font-medium text-gray-400">Thumbnail Preview</label>
+                                <div className="relative aspect-video rounded-lg border-2 border-dashed border-white/10 bg-white/5 overflow-hidden flex items-center justify-center group">
+                                    {formData.imageUrl ? (
+                                        <img 
+                                            src={formData.imageUrl} 
+                                            alt="Preview" 
+                                            className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                                            onError={(e) => (e.currentTarget.src = "https://via.placeholder.com/400x225?text=Invalid+Image+URL")}
+                                        />
+                                    ) : (
+                                        <div className="text-center p-4">
+                                            <ImageIcon className="w-8 h-8 text-gray-600 mx-auto mb-1" />
+                                            <span className="text-[10px] text-gray-500">Enter a URL to preview</span>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -271,6 +295,14 @@ export default function PortfolioManager() {
                     </div>
                 )}
             </div>
+
+            {toast && (
+                <Toast 
+                    message={toast.message} 
+                    type={toast.type} 
+                    onClose={() => setToast(null)} 
+                />
+            )}
         </div>
     );
 }

@@ -7,6 +7,9 @@ import { useState, useEffect } from "react";
 import BlogManager from "@/components/admin/BlogManager";
 import PortfolioManager from "@/components/admin/PortfolioManager";
 import NewsletterManager from "@/components/admin/NewsletterManager";
+import UsersManager from "@/components/admin/UsersManager";
+import SettingsManager from "@/components/admin/SettingsManager";
+import { X, ExternalLink } from "lucide-react";
 
 interface AdminMessage {
     _id: string;
@@ -28,6 +31,7 @@ export default function AdminDashboard() {
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [messages, setMessages] = useState<AdminMessage[]>([]);
     const [loading, setLoading] = useState(true);
+    const [selectedMessage, setSelectedMessage] = useState<AdminMessage | null>(null);
 
     useEffect(() => {
         const fetchDashboardData = async () => {
@@ -192,7 +196,12 @@ export default function AdminDashboard() {
                                                         </div>
                                                     </td>
                                                     <td className="px-6 py-4 text-right">
-                                                        <button className="text-white hover:text-[#EAB308] font-medium transition-colors cursor-pointer">Review</button>
+                                                        <button 
+                                                            onClick={() => setSelectedMessage(msg)}
+                                                            className="text-[#EAB308] hover:text-[#CA8A04] font-medium transition-colors cursor-pointer"
+                                                        >
+                                                            Review
+                                                        </button>
                                                     </td>
                                                 </tr>
                                             ))
@@ -223,19 +232,80 @@ export default function AdminDashboard() {
                 )}
 
                 {activeView === "users" && (
-                    <div className="text-center py-20">
-                        <h2 className="text-2xl font-bold text-white mb-4">User Management</h2>
-                        <p className="text-gray-400">Manage admin access and permissions.</p>
-                    </div>
+                    <UsersManager />
                 )}
 
                 {activeView === "settings" && (
-                    <div className="text-center py-20">
-                        <h2 className="text-2xl font-bold text-white mb-4">Site Settings</h2>
-                        <p className="text-gray-400">Configure global site settings and SEO.</p>
-                    </div>
+                    <SettingsManager />
                 )}
             </main>
+
+            {/* Message Review Modal */}
+            {selectedMessage && (
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="bg-[#1A1A1A] border border-white/10 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl"
+                    >
+                        <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
+                            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                <MessageSquare className="w-5 h-5 text-[#EAB308]" />
+                                Message Details
+                            </h3>
+                            <button 
+                                onClick={() => setSelectedMessage(null)}
+                                className="p-2 hover:bg-white/10 rounded-full text-gray-400 transition-colors"
+                            >
+                                <X className="w-6 h-6" />
+                            </button>
+                        </div>
+                        
+                        <div className="p-8 space-y-6">
+                            <div className="grid grid-cols-2 gap-8">
+                                <div>
+                                    <div className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">From</div>
+                                    <div className="text-white font-medium text-lg">{selectedMessage.name}</div>
+                                </div>
+                                <div>
+                                    <div className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">Sent On</div>
+                                    <div className="text-white font-medium">{new Date(selectedMessage.createdAt).toLocaleString()}</div>
+                                </div>
+                                <div className="col-span-2">
+                                    <div className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">Email Address</div>
+                                    <div className="text-[#EAB308] font-medium flex items-center gap-2">
+                                        <Mail className="w-4 h-4" />
+                                        {selectedMessage.email}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Message Body</div>
+                                <div className="bg-white/5 border border-white/5 rounded-xl p-6 text-gray-300 leading-relaxed whitespace-pre-wrap">
+                                    {selectedMessage.message}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="p-6 border-t border-white/10 bg-white/5 flex justify-end gap-4">
+                            <button 
+                                onClick={() => setSelectedMessage(null)}
+                                className="px-6 py-2 rounded-md font-bold text-gray-400 hover:text-white transition-colors"
+                            >
+                                Close
+                            </button>
+                            <a 
+                                href={`mailto:${selectedMessage.email}`}
+                                className="px-6 py-2 rounded-md font-extrabold bg-[#EAB308] text-black hover:bg-[#CA8A04] transition-all flex items-center gap-2"
+                            >
+                                <Mail className="w-4 h-4" />
+                                Reply via Email
+                            </a>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
         </div>
     );
 }
