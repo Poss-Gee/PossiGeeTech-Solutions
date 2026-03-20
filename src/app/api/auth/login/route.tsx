@@ -11,8 +11,8 @@ export async function POST(req: Request) {
         await dbConnect();
         const { email, password } = await req.json();
 
-        // Find user
-        const user = await AdminUser.findOne({ email });
+        // Find user and explicitly include password
+        const user = await AdminUser.findOne({ email }).select("+password");
         if (!user || user.status !== "Active") {
             return NextResponse.json({ success: false, error: "Invalid credentials or account pending" }, { status: 401 });
         }
