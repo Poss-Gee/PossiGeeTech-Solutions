@@ -64,15 +64,15 @@ export default function SettingsManager() {
     return (
         <div className="space-y-8">
             <header>
-                <h2 className="text-3xl font-bold text-white">System Settings</h2>
-                <p className="text-gray-400 mt-1">Configure your platform preferences and contact information.</p>
+                <h2 className="text-2xl md:text-3xl font-bold text-white">System Settings</h2>
+                <p className="text-gray-400 mt-1 text-sm">Configure your platform preferences and contact information.</p>
             </header>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* General Settings */}
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-[#1A1A1A] border border-[#333] p-8 rounded-xl shadow-2xl">
-                        <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                    <div className="bg-[#1A1A1A] border border-[#333] p-4 sm:p-8 rounded-xl shadow-2xl">
+                        <h3 className="text-lg sm:text-xl font-bold text-white mb-6 flex items-center gap-2">
                             <Globe className="w-5 h-5 text-[#EAB308]" />
                             General Information
                         </h3>
@@ -119,35 +119,35 @@ export default function SettingsManager() {
                         </div>
                     </div>
 
-                    <div className="bg-[#1A1A1A] border border-[#333] p-8 rounded-xl shadow-2xl">
-                        <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                    <div className="bg-[#1A1A1A] border border-[#333] p-4 sm:p-8 rounded-xl shadow-2xl">
+                        <h3 className="text-lg sm:text-xl font-bold text-white mb-6 flex items-center gap-2">
                             <Bell className="w-5 h-5 text-[#EAB308]" />
                             Notifications
                         </h3>
                         
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/5">
+                            <div className="flex items-center justify-between p-3 sm:p-4 bg-white/5 rounded-lg border border-white/5">
                                 <div>
-                                    <div className="text-white font-medium">Email Alerts</div>
-                                    <div className="text-gray-400 text-sm">Receive emails for new contact submissions.</div>
+                                    <div className="text-white font-medium text-sm sm:text-base">Email Alerts</div>
+                                    <div className="text-gray-400 text-xs sm:text-sm">Receive emails for new contact submissions.</div>
                                 </div>
                                 <input 
                                     type="checkbox" 
                                     checked={settings.emailNotifications}
                                     onChange={(e) => setSettings({...settings, emailNotifications: e.target.checked})}
-                                    className="w-6 h-6 accent-[#EAB308] bg-transparent border-white/10 rounded cursor-pointer"
+                                    className="w-5 h-5 sm:w-6 sm:h-6 accent-[#EAB308] bg-transparent border-white/10 rounded cursor-pointer"
                                 />
                             </div>
-                            <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/5">
+                            <div className="flex items-center justify-between p-3 sm:p-4 bg-white/5 rounded-lg border border-white/5">
                                 <div>
-                                    <div className="text-white font-medium">Newsletter Automation</div>
-                                    <div className="text-gray-400 text-sm">Automatically sync new subscribers to mailing list.</div>
+                                    <div className="text-white font-medium text-sm sm:text-base">Newsletter Automation</div>
+                                    <div className="text-gray-400 text-xs sm:text-sm">Automatically sync new subscribers to mailing list.</div>
                                 </div>
                                 <input 
                                     type="checkbox" 
                                     checked={settings.newsletterSync}
                                     onChange={(e) => setSettings({...settings, newsletterSync: e.target.checked})}
-                                    className="w-6 h-6 accent-[#EAB308] bg-transparent border-white/10 rounded cursor-pointer"
+                                    className="w-5 h-5 sm:w-6 sm:h-6 accent-[#EAB308] bg-transparent border-white/10 rounded cursor-pointer"
                                 />
                             </div>
                         </div>
@@ -156,8 +156,8 @@ export default function SettingsManager() {
 
                 {/* Sidebar / Status */}
                 <div className="space-y-6">
-                    <div className="bg-[#1A1A1A] border border-[#333] p-8 rounded-xl shadow-2xl">
-                        <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                    <div className="bg-[#1A1A1A] border border-[#333] p-4 sm:p-8 rounded-xl shadow-2xl">
+                        <h3 className="text-lg sm:text-xl font-bold text-white mb-6 flex items-center gap-2">
                             <Shield className="w-5 h-5 text-[#EAB308]" />
                             System Status
                         </h3>

@@ -2,7 +2,7 @@
 
 import { CheckCircle2, AlertCircle, X } from "lucide-react";
 import { useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 interface ToastProps {
     message: string;

@@ -30,6 +30,19 @@ export default function Navbar() {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
+    // Robust check to exclude admin pages
+    const isAdmin = pathname?.toLowerCase().includes("/admin");
+    
+    // Also check window location directly for extra safety on client
+    const [isClientAdmin, setIsClientAdmin] = useState(false);
+    useEffect(() => {
+        if (window.location.pathname.toLowerCase().includes("/admin")) {
+            setIsClientAdmin(true);
+        }
+    }, []);
+
+    if (isAdmin || isClientAdmin) return null;
+
     return (
         <nav className={`fixed w-full top-0 z-50 transition-all duration-500 ${scrolled
             ? "bg-[#0A0A0A]/90 backdrop-blur-xl border-b border-white/10 py-1 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.3)]"
@@ -40,9 +53,11 @@ export default function Navbar() {
 
                     {/* Logo */}
                     <Link href="/" className="flex items-center group">
-                        <img
+                        <Image
                             src="/logo.png"
                             alt="PossiGeeTech Logo"
+                            width={160}
+                            height={96}
                             className={`w-auto object-contain transition-all duration-500 group-hover:scale-105 ${scrolled ? "h-16" : "h-24"}`}
                         />
                     </Link>

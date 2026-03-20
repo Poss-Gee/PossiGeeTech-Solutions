@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Users, UserPlus, Shield, Mail, Trash2, Edit2, Loader2 } from "lucide-react";
+import { UserPlus, Shield, Trash2, Edit2, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import Toast from "@/components/ui/Toast";
 
@@ -15,7 +15,7 @@ interface AdminUser {
 }
 
 export default function UsersManager() {
-    const [users, setUsers] = useState<any[]>([]);
+    const [users, setUsers] = useState<AdminUser[]>([]);
     const [loading, setLoading] = useState(true);
     const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
     const [showInviteModal, setShowInviteModal] = useState(false);
@@ -88,7 +88,7 @@ export default function UsersManager() {
         }
     };
 
-    const startEdit = (user: any) => {
+    const startEdit = (user: AdminUser) => {
         setEditingUserId(user._id || user.id);
         setNewUser({ name: user.name, email: user.email, role: user.role });
         setShowInviteModal(true);
@@ -104,10 +104,10 @@ export default function UsersManager() {
 
     return (
         <div className="space-y-8">
-            <header className="flex justify-between items-center">
+            <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h2 className="text-3xl font-bold text-white">Team Management</h2>
-                    <p className="text-gray-400 mt-1">Manage administrative access to the platform.</p>
+                    <h2 className="text-2xl md:text-3xl font-bold text-white">Team Management</h2>
+                    <p className="text-gray-400 mt-1 text-sm">Manage administrative access to the platform.</p>
                 </div>
                 <button 
                     onClick={() => {
@@ -115,7 +115,7 @@ export default function UsersManager() {
                         setNewUser({ name: "", email: "", role: "Editor" });
                         setShowInviteModal(true);
                     }}
-                    className="flex items-center gap-2 px-4 py-2 bg-[#EAB308] text-black font-bold rounded-md hover:bg-[#CA8A04] transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 bg-[#EAB308] text-black font-bold rounded-md hover:bg-[#CA8A04] transition-colors w-full sm:w-auto justify-center"
                 >
                     <UserPlus className="w-5 h-5" />
                     Invite Member
@@ -123,7 +123,8 @@ export default function UsersManager() {
             </header>
 
             <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden shadow-2xl">
-                <table className="w-full text-left">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left min-w-[600px]">
                     <thead className="bg-white/5 text-gray-400 text-sm">
                         <tr>
                             <th className="px-6 py-4 font-medium">User</th>
@@ -178,6 +179,7 @@ export default function UsersManager() {
                     </tbody>
                 </table>
             </div>
+        </div>
 
             {showInviteModal && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
@@ -216,7 +218,7 @@ export default function UsersManager() {
                                 <label className="text-sm font-medium text-gray-400">Role</label>
                                 <select 
                                     value={newUser.role}
-                                    onChange={(e) => setNewUser({...newUser, role: e.target.value as any})}
+                                    onChange={(e) => setNewUser({...newUser, role: e.target.value as "Admin" | "Editor"})}
                                     className="w-full bg-[#1A1A1A] border border-white/10 rounded-md px-4 py-3 text-white focus:outline-none focus:border-[#EAB308]"
                                 >
                                     <option value="Editor">Editor</option>

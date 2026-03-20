@@ -27,7 +27,7 @@ export const InviteEmail: React.FC<InviteEmailProps> = ({
     }}>
       <h1 style={{ color: '#EAB308', marginBottom: '20px' }}>Join the {companyName} Team!</h1>
       <p>Hello {name},</p>
-      <p>You have been invited to join the administrative team at <strong>{companyName}</strong>. As a member, you'll be able to manage blog posts, portfolio projects, and more.</p>
+      <p>You have been invited to join the administrative team at <strong>{companyName}</strong>. As a member, you&apos;ll be able to manage blog posts, portfolio projects, and more.</p>
       <div style={{ textAlign: 'center', margin: '30px 0' }}>
         <a href={inviteLink} style={{
           backgroundColor: '#EAB308',
@@ -42,7 +42,7 @@ export const InviteEmail: React.FC<InviteEmailProps> = ({
         </a>
       </div>
       <p style={{ fontSize: '14px', color: '#666' }}>
-        If you didn't expect this invitation, you can safely ignore this email.
+        If you didn&apos;t expect this invitation, you can safely ignore this email.
       </p>
       <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '30px 0' }} />
       <p style={{ fontSize: '12px', color: '#999', textAlign: 'center' }}>

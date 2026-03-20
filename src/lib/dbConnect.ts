@@ -8,25 +8,38 @@ if (!MONGODB_URI) {
     );
 }
 
+interface MongooseCache {
+    conn: typeof mongoose | null;
+    promise: Promise<typeof mongoose> | null;
+}
+
+declare global {
+    var mongoose: MongooseCache | undefined;
+}
+
 // In Next.js (serverless environment), we need to cache the database connection
 // so that we don't create a new connection pool for every request.
-let cached = (global as any).mongoose;
+let cached = global.mongoose;
 
 if (!cached) {
-    cached = (global as any).mongoose = { conn: null, promise: null };
+    cached = global.mongoose = { conn: null, promise: null };
 }
 
 async function dbConnect() {
-    if (cached.conn) {
-        return cached.conn;
+    // We already know cached is not undefined here because of the check above,
+    // but TypeScript might still complain if we don't use a local reference or assertion.
+    const c = cached!;
+
+    if (c.conn) {
+        return c.conn;
     }
 
-    if (!cached.promise) {
+    if (!c.promise) {
         const opts = {
             bufferCommands: false,
         };
 
-        cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+        c.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
             console.log("Connected to MongoDB successfully");
             return mongoose;
         }).catch(err => {
@@ -36,13 +49,13 @@ async function dbConnect() {
     }
 
     try {
-        cached.conn = await cached.promise;
+        c.conn = await c.promise;
     } catch (e) {
-        cached.promise = null;
+        c.promise = null;
         throw e;
     }
 
-    return cached.conn;
+    return c.conn;
 }
 
 export default dbConnect;

@@ -4,12 +4,19 @@ import Blog from "@/models/Blog";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { mockBlogPosts } from "@/lib/constants";
 import { ArrowLeft, Calendar, User, Clock, Share2 } from "lucide-react";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;
     await dbConnect();
-    const post = await Blog.findOne({ slug });
+    let post = await Blog.findOne({ slug });
+    
+    // Fallback to mock data if not found in DB
+    if (!post) {
+        post = mockBlogPosts.find(p => p.slug === slug);
+    }
+
     if (!post) return { title: "Post Not Found" };
     return { title: `${post.title} | PossiGeeTech Blog` };
 }
@@ -17,7 +24,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
     await dbConnect();
-    const post = await Blog.findOne({ slug });
+    let post = await Blog.findOne({ slug });
+
+    // Fallback to mock data if not found in DB
+    if (!post) {
+        post = mockBlogPosts.find(p => p.slug === slug);
+    }
 
     if (!post) {
         notFound();
@@ -51,7 +63,12 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                         </div>
                         <div className="flex items-center gap-2">
                             <Calendar className="w-5 h-5" />
-                            <span>{new Date(post.createdAt).toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                            <span>
+                                {post.createdAt 
+                                    ? new Date(post.createdAt).toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric' })
+                                    : post.date
+                                }
+                            </span>
                         </div>
                         <div className="flex items-center gap-2">
                             <Clock className="w-5 h-5" />

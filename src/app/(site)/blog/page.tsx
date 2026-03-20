@@ -7,8 +7,21 @@ import { Calendar, User, ArrowRight, Mail, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { mockBlogPosts } from "@/lib/constants";
 
+interface BlogPost {
+    id: string;
+    _id?: string;
+    title: string;
+    excerpt: string;
+    category: string;
+    date: string;
+    author: string;
+    readTime: string;
+    slug: string;
+    imageUrl?: string;
+}
+
 export default function BlogListing() {
-    const [posts, setPosts] = useState<any[]>([]);
+    const [posts, setPosts] = useState<BlogPost[]>([]);
     const [loadingPosts, setLoadingPosts] = useState(true);
     const [email, setEmail] = useState("");
     const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -20,8 +33,8 @@ export default function BlogListing() {
                 const data = await res.json();
                 if (data.success) {
                     // Merge real posts with mock posts to keep content rich
-                    const realPosts = data.data || [];
-                    const mergedPosts = [...realPosts, ...mockBlogPosts.filter(m => !realPosts.find((r: any) => r.title === m.title))];
+                    const realPosts: BlogPost[] = data.data || [];
+                    const mergedPosts = [...realPosts, ...mockBlogPosts.filter(m => !realPosts.find((r: BlogPost) => r.title === m.title)) as BlogPost[]];
                     setPosts(mergedPosts);
                 } else {
                     setPosts(mockBlogPosts);
@@ -137,9 +150,9 @@ export default function BlogListing() {
                                 <Loader2 className="w-10 h-10 text-[#EAB308] animate-spin" />
                             </div>
                         ) : (
-                            posts.slice(1).map((post: any, index: number) => (
+                            posts.slice(1).map((post: BlogPost, index: number) => (
                             <motion.div
-                                key={post.id}
+                                key={post.id || post._id}
                                 className="bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden flex flex-col hover:border-[#EAB308]/50 hover:bg-white/10 transition-all group"
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
@@ -219,12 +232,14 @@ export default function BlogListing() {
                                 className="w-full sm:w-96 bg-white/5 border border-white/10 rounded-md px-4 py-3 text-white focus:outline-none focus:border-[#EAB308] transition-colors"
                                 required
                             />
-                            {status === "success" && (
-                                <p className="text-green-500 text-xs mt-2">Thanks for subscribing!</p>
-                            )}
-                            {status === "error" && (
-                                <p className="text-red-500 text-xs mt-2">Failed to subscribe. Please try again.</p>
-                            )}
+                            <div className="h-6 mt-2">
+                                {status === "success" && (
+                                    <p className="text-green-500 text-xs">Thanks for subscribing!</p>
+                                )}
+                                {status === "error" && (
+                                    <p className="text-red-500 text-xs">Failed to subscribe. Please try again.</p>
+                                )}
+                            </div>
                         </div>
                         <button
                             type="submit"

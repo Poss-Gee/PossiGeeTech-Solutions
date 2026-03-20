@@ -43,10 +43,11 @@ export default function Contact() {
                 }
                 console.error("Submission error:", data);
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const err = error as Error;
             setSubmitStatus("error");
             setErrorMessage("Network error. Please check your internet connection.");
-            console.error("Network or parsing error:", error);
+            console.error("Network or parsing error:", err);
         } finally {
             setIsSubmitting(false);
         }
@@ -73,7 +74,7 @@ export default function Contact() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.1 }}
                     >
-                        We'd love to hear from you. Whether you have a question about features, pricing, or need a demo, our team is ready to answer all your questions.
+                        We&apos;d love to hear from you. Whether you have a question about features, pricing, or need a demo, our team is ready to answer all your questions.
                     </motion.p>
                 </div>
             </section>

@@ -1,8 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { MessageSquare, Mail, Briefcase, Users, Settings, LogOut, Clock, Loader2, CheckCircle2, AlertCircle, Newspaper } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { MessageSquare, Mail, Briefcase, Users, Settings, LogOut, Clock, Loader2, CheckCircle2, AlertCircle, Newspaper, Menu } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import BlogManager from "@/components/admin/BlogManager";
 import PortfolioManager from "@/components/admin/PortfolioManager";
@@ -32,6 +33,7 @@ export default function AdminDashboard() {
     const [messages, setMessages] = useState<AdminMessage[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedMessage, setSelectedMessage] = useState<AdminMessage | null>(null);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     useEffect(() => {
         const fetchDashboardData = async () => {
@@ -73,73 +75,117 @@ export default function AdminDashboard() {
     }
 
     return (
-        <div className="min-h-screen bg-[#0A0A0A] flex flex-col md:flex-row pt-20 border-t border-[#1E1E1E]">
-
-            {/* Sidebar */}
-            <aside className="w-full md:w-64 bg-white/5 backdrop-blur-xl border-r border-white/10 p-6 flex flex-col hidden md:flex">
-                <div className="mb-10 px-2">
-                    <span className="text-sm font-medium text-gray-500 uppercase tracking-widest">Dashboard</span>
+        <div className="min-h-screen bg-[#0A0A0A] flex flex-col border-t border-[#1E1E1E]">
+            {/* Mobile Header */}
+            <div className="md:hidden flex items-center justify-between p-4 border-b border-white/10 bg-[#0A0A0A] sticky top-0 z-[100]">
+                <div className="flex items-center gap-2">
+                    <Image src="/logo.png" alt="Logo" width={120} height={72} className="h-12 w-auto object-contain" />
+                    <span className="text-[#EAB308] font-bold text-xl uppercase tracking-wider hidden xs:block">Admin</span>
                 </div>
+                <button 
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    className="p-2 text-white hover:bg-white/5 rounded-md transition-colors"
+                >
+                    {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                </button>
+            </div>
 
-                <nav className="space-y-2 flex-grow">
-                    <button 
-                        onClick={() => setActiveView("messages")}
-                        className={`flex items-center gap-3 w-full px-4 py-3 font-semibold rounded-md transition-colors cursor-pointer ${activeView === "messages" ? "bg-[#EAB308] text-black" : "text-gray-400 hover:text-white hover:bg-white/10"}`}
-                    >
-                        <MessageSquare className="w-5 h-5" />
-                        Messages
-                    </button>
-                    <button 
-                        onClick={() => setActiveView("blog")}
-                        className={`flex items-center gap-3 w-full px-4 py-3 font-semibold rounded-md transition-colors cursor-pointer ${activeView === "blog" ? "bg-[#EAB308] text-black" : "text-gray-400 hover:text-white hover:bg-white/10"}`}
-                    >
-                        <Newspaper className="w-5 h-5" />
-                        Blog
-                    </button>
-                    <button 
-                        onClick={() => setActiveView("newsletter")}
-                        className={`flex items-center gap-3 w-full px-4 py-3 font-semibold rounded-md transition-colors cursor-pointer ${activeView === "newsletter" ? "bg-[#EAB308] text-black" : "text-gray-400 hover:text-white hover:bg-white/10"}`}
-                    >
-                        <Mail className="w-5 h-5" />
-                        Newsletter
-                    </button>
-                    <button 
-                        onClick={() => setActiveView("portfolio")}
-                        className={`flex items-center gap-3 w-full px-4 py-3 font-semibold rounded-md transition-colors cursor-pointer ${activeView === "portfolio" ? "bg-[#EAB308] text-black" : "text-gray-400 hover:text-white hover:bg-white/10"}`}
-                    >
-                        <Briefcase className="w-5 h-5" />
-                        Portfolio
-                    </button>
-                    <button 
-                        onClick={() => setActiveView("users")}
-                        className={`flex items-center gap-3 w-full px-4 py-3 font-semibold rounded-md transition-colors cursor-pointer ${activeView === "users" ? "bg-[#EAB308] text-black" : "text-gray-400 hover:text-white hover:bg-white/10"}`}
-                    >
-                        <Users className="w-5 h-5" />
-                        Users
-                    </button>
-                    <button 
-                        onClick={() => setActiveView("settings")}
-                        className={`flex items-center gap-3 w-full px-4 py-3 font-semibold rounded-md transition-colors cursor-pointer ${activeView === "settings" ? "bg-[#EAB308] text-black" : "text-gray-400 hover:text-white hover:bg-white/10"}`}
-                    >
-                        <Settings className="w-5 h-5" />
-                        Settings
-                    </button>
-                </nav>
+            <div className="flex flex-col md:flex-row flex-1">
+                {/* Mobile Sidebar (Animated) */}
+                <AnimatePresence mode="wait">
+                    {isMenuOpen && (
+                        <motion.aside 
+                            key="mobile-sidebar"
+                            initial={{ x: "-100%" }}
+                            animate={{ x: 0 }}
+                            exit={{ x: "-100%" }}
+                            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                            className="fixed inset-0 z-[999] flex md:hidden bg-[#0A0A0A] p-6 flex-col"
+                        >
+                            {/* Mobile overlay background (clicking outside content) */}
+                            <div className="absolute inset-0 bg-black/60 -z-10" onClick={() => setIsMenuOpen(false)} />
+                            
+                            <div className="mb-10 px-2 flex justify-between items-center">
+                                <Image src="/logo.png" alt="Logo" width={140} height={84} className="h-14 w-auto object-contain" />
+                                <button onClick={() => setIsMenuOpen(false)} className="p-2 text-gray-400 hover:text-white">
+                                    <X className="w-6 h-6" />
+                                </button>
+                            </div>
 
-                <div className="mt-auto pt-6 border-t border-white/10">
-                    <Link href="/" className="flex items-center gap-3 w-full px-4 py-3 text-gray-400 hover:text-red-400 hover:bg-red-500/10 font-medium rounded-md transition-colors">
-                        <LogOut className="w-5 h-5" />
-                        Logout
-                    </Link>
-                </div>
-            </aside>
+                            <nav className="space-y-4 flex-grow">
+                                {[
+                                    { id: "messages", label: "Messages", icon: MessageSquare },
+                                    { id: "blog", label: "Blog", icon: Newspaper },
+                                    { id: "newsletter", label: "Newsletter", icon: Mail },
+                                    { id: "portfolio", label: "Portfolio", icon: Briefcase },
+                                    { id: "users", label: "Users", icon: Users },
+                                    { id: "settings", label: "Settings", icon: Settings },
+                                ].map((item) => (
+                                    <button 
+                                        key={item.id}
+                                        onClick={() => {
+                                            setActiveView(item.id as any);
+                                            setIsMenuOpen(false);
+                                        }}
+                                        className={`flex items-center gap-4 w-full px-4 py-4 text-lg font-bold rounded-xl transition-all ${activeView === item.id ? "bg-[#EAB308] text-black shadow-[0_0_20px_rgba(234,179,8,0.2)]" : "text-gray-400 hover:text-white hover:bg-white/5"}`}
+                                    >
+                                        <item.icon className="w-6 h-6" />
+                                        {item.label}
+                                    </button>
+                                ))}
+                            </nav>
+
+                            <div className="mt-auto pt-6 border-t border-white/10">
+                                <Link href="/" className="flex items-center gap-4 w-full px-4 py-4 text-gray-400 hover:text-red-400 font-bold text-lg">
+                                    <LogOut className="w-6 h-6" />
+                                    Logout
+                                </Link>
+                            </div>
+                        </motion.aside>
+                    )}
+                </AnimatePresence>
+
+                {/* Desktop Sidebar (Always visible) */}
+                <aside className="hidden md:flex md:w-64 bg-white/5 backdrop-blur-xl border-r border-white/10 p-6 flex-col relative h-[calc(100vh-80px)] sticky top-0">
+                    <div className="mb-10 px-2">
+                        <Image src="/logo.png" alt="Logo" width={140} height={84} className="h-14 w-auto object-contain mb-6" />
+                        <span className="text-sm font-medium text-gray-500 uppercase tracking-widest block">Dashboard</span>
+                    </div>
+
+                    <nav className="space-y-2 flex-grow">
+                        {[
+                            { id: "messages", label: "Messages", icon: MessageSquare },
+                            { id: "blog", label: "Blog", icon: Newspaper },
+                            { id: "newsletter", label: "Newsletter", icon: Mail },
+                            { id: "portfolio", label: "Portfolio", icon: Briefcase },
+                            { id: "users", label: "Users", icon: Users },
+                            { id: "settings", label: "Settings", icon: Settings },
+                        ].map((item) => (
+                            <button 
+                                key={item.id}
+                                onClick={() => setActiveView(item.id as any)}
+                                className={`flex items-center gap-3 w-full px-4 py-3 font-semibold rounded-md transition-colors cursor-pointer ${activeView === item.id ? "bg-[#EAB308] text-black" : "text-gray-400 hover:text-white hover:bg-white/10"}`}
+                            >
+                                <item.icon className="w-5 h-5" />
+                                {item.label}
+                            </button>
+                        ))}
+                    </nav>
+
+                    <div className="mt-auto pt-6 border-t border-white/10">
+                        <Link href="/" className="flex items-center gap-3 w-full px-4 py-3 text-gray-400 hover:text-red-400 hover:bg-red-500/10 font-medium rounded-md transition-colors">
+                            <LogOut className="w-5 h-5" />
+                            Logout
+                        </Link>
+                    </div>
+                </aside>
 
             {/* Main Content */}
-            <main className="flex-1 p-8">
+            <main className="flex-1 p-4 md:p-8 overflow-x-hidden">
                 {activeView === "messages" && (
                     <>
-                        <header className="mb-8 flex justify-between items-center">
-                            <h1 className="text-3xl font-bold text-white">Inbox & Requests</h1>
+                        <header className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <h1 className="text-2xl md:text-3xl font-bold text-white">Inbox & Requests</h1>
                             <div className="flex items-center gap-4">
                                 <div className="w-10 h-10 rounded-full bg-white/10 border border-white/10 flex items-center justify-center">
                                     <span className="text-[#EAB308] font-bold">A</span>
@@ -170,7 +216,7 @@ export default function AdminDashboard() {
                                 <button className="text-sm text-[#EAB308] hover:underline cursor-pointer">View All</button>
                             </div>
                             <div className="overflow-x-auto">
-                                <table className="w-full text-left">
+                                <table className="w-full text-left min-w-[700px]">
                                     <thead className="bg-white/5 text-gray-400 text-sm">
                                         <tr>
                                             <th className="px-6 py-4 font-medium">Name</th>
@@ -238,15 +284,22 @@ export default function AdminDashboard() {
                 {activeView === "settings" && (
                     <SettingsManager />
                 )}
+
+                {/* Admin Footer */}
+                <footer className="mt-12 py-6 border-t border-white/5 text-center">
+                    <p className="text-gray-500 text-sm font-medium">
+                        &copy; {new Date().getFullYear()} <span className="text-[#EAB308]">PossiGeeTech Solutions</span>. All rights reserved.
+                    </p>
+                </footer>
             </main>
 
             {/* Message Review Modal */}
             {selectedMessage && (
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
                     <motion.div 
-                        initial={{ opacity: 0, scale: 0.9 }}
+                        initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="bg-[#1A1A1A] border border-white/10 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl"
+                        className="bg-[#1A1A1A] border border-white/10 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
                     >
                         <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
                             <h3 className="text-xl font-bold text-white flex items-center gap-2">
@@ -261,19 +314,19 @@ export default function AdminDashboard() {
                             </button>
                         </div>
                         
-                        <div className="p-8 space-y-6">
-                            <div className="grid grid-cols-2 gap-8">
+                        <div className="p-4 sm:p-8 space-y-6 overflow-y-auto">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
                                 <div>
-                                    <div className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">From</div>
-                                    <div className="text-white font-medium text-lg">{selectedMessage.name}</div>
+                                    <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">From</div>
+                                    <div className="text-white font-medium text-base sm:text-lg">{selectedMessage.name}</div>
                                 </div>
                                 <div>
-                                    <div className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">Sent On</div>
-                                    <div className="text-white font-medium">{new Date(selectedMessage.createdAt).toLocaleString()}</div>
+                                    <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Sent On</div>
+                                    <div className="text-white font-medium text-sm sm:text-base">{new Date(selectedMessage.createdAt).toLocaleString()}</div>
                                 </div>
-                                <div className="col-span-2">
-                                    <div className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">Email Address</div>
-                                    <div className="text-[#EAB308] font-medium flex items-center gap-2">
+                                <div className="col-span-1 sm:col-span-2">
+                                    <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Email Address</div>
+                                    <div className="text-[#EAB308] font-medium flex items-center gap-2 text-sm sm:text-base">
                                         <Mail className="w-4 h-4" />
                                         {selectedMessage.email}
                                     </div>
@@ -288,16 +341,16 @@ export default function AdminDashboard() {
                             </div>
                         </div>
 
-                        <div className="p-6 border-t border-white/10 bg-white/5 flex justify-end gap-4">
+                        <div className="p-4 sm:p-6 border-t border-white/10 bg-white/5 flex flex-col sm:flex-row justify-end gap-3 sm:gap-4">
                             <button 
                                 onClick={() => setSelectedMessage(null)}
-                                className="px-6 py-2 rounded-md font-bold text-gray-400 hover:text-white transition-colors"
+                                className="order-2 sm:order-1 px-6 py-3 rounded-md font-bold text-gray-400 hover:text-white transition-colors"
                             >
                                 Close
                             </button>
                             <a 
                                 href={`mailto:${selectedMessage.email}`}
-                                className="px-6 py-2 rounded-md font-extrabold bg-[#EAB308] text-black hover:bg-[#CA8A04] transition-all flex items-center gap-2"
+                                className="order-1 sm:order-2 px-6 py-3 rounded-md font-extrabold bg-[#EAB308] text-black hover:bg-[#CA8A04] transition-all flex items-center justify-center gap-2"
                             >
                                 <Mail className="w-4 h-4" />
                                 Reply via Email
@@ -306,6 +359,7 @@ export default function AdminDashboard() {
                     </motion.div>
                 </div>
             )}
+            </div>
         </div>
     );
 }

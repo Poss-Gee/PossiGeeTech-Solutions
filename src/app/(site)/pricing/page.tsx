@@ -1,61 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CheckCircle2, XCircle } from "lucide-react";
 import Link from "next/link";
-
-const plans = [
-    {
-        name: "Starter",
-        description: "Perfect for small businesses and individuals just getting started.",
-        price: "$999",
-        popular: false,
-        features: [
-            "Custom 5-page Website",
-            "Mobile Responsive Design",
-            "Basic SEO Setup",
-            "Contact Form Integration",
-            "1 Month Free Support",
-        ],
-        notIncluded: [
-            "E-commerce Functionality",
-            "Custom Web App Development",
-            "Advanced SEO & Analytics",
-        ]
-    },
-    {
-        name: "Business",
-        description: "Ideal for growing companies needing advanced features and integrations.",
-        price: "$2,499",
-        popular: true,
-        features: [
-            "Up to 15 Pages / E-commerce",
-            "Custom UI/UX Design",
-            "Advanced SEO Optimization",
-            "Payment Gateway Integration",
-            "CMS Setup (Content Management)",
-            "3 Months Free Support",
-        ],
-        notIncluded: [
-            "Custom Mobile App",
-        ]
-    },
-    {
-        name: "Premium",
-        description: "Complete digital transformation for enterprise-level operations.",
-        price: "Custom",
-        popular: false,
-        features: [
-            "Unlimited Web Pages",
-            "Custom Web/Mobile Application",
-            "Complex Backend Architecture",
-            "Advanced Analytics & Tracking",
-            "Dedicated Project Manager",
-            "12 Months Premium Support",
-        ],
-        notIncluded: []
-    }
-];
 
 export default function Pricing() {
     return (

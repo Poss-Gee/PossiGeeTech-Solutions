@@ -79,14 +79,14 @@ export default function NewsletterManager() {
 
     return (
         <div className="space-y-8">
-            <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h2 className="text-3xl font-bold text-white">Newsletter</h2>
-                    <p className="text-gray-400 mt-1">Manage your {subscribers.length} active subscribers.</p>
+                    <h2 className="text-2xl md:text-3xl font-bold text-white">Newsletter</h2>
+                    <p className="text-gray-400 mt-1 text-sm">Manage your {subscribers.length} active subscribers.</p>
                 </div>
                 <button 
                     onClick={exportToCSV}
-                    className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 text-white font-medium rounded-md hover:bg-white/10 transition-colors"
+                    className="flex justify-center items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 text-white font-medium rounded-md hover:bg-white/10 transition-colors w-full sm:w-auto"
                 >
                     <Download className="w-5 h-5" />
                     Export CSV
@@ -105,44 +105,46 @@ export default function NewsletterManager() {
             </div>
 
             <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden shadow-2xl">
-                <table className="w-full text-left">
-                    <thead className="bg-white/5 text-gray-400 text-sm">
-                        <tr>
-                            <th className="px-6 py-4 font-medium">Email Address</th>
-                            <th className="px-6 py-4 font-medium">Joined On</th>
-                            <th className="px-6 py-4 font-medium text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#333] text-sm">
-                        {filteredSubscribers.length > 0 ? (
-                            filteredSubscribers.map((subscriber) => (
-                                <tr key={subscriber._id} className="hover:bg-white/5 transition-colors text-white">
-                                    <td className="px-6 py-4 flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-[#EAB308]/10 flex items-center justify-center">
-                                            <Mail className="w-4 h-4 text-[#EAB308]" />
-                                        </div>
-                                        {subscriber.email}
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-400">{new Date(subscriber.createdAt).toLocaleDateString()}</td>
-                                    <td className="px-6 py-4 text-right">
-                                        <button 
-                                            onClick={() => handleDelete(subscriber._id)}
-                                            className="p-2 hover:text-red-500 transition-colors"
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                        </button>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left min-w-[500px]">
+                        <thead className="bg-white/5 text-gray-400 text-sm">
+                            <tr>
+                                <th className="px-6 py-4 font-medium">Email Address</th>
+                                <th className="px-6 py-4 font-medium">Joined On</th>
+                                <th className="px-6 py-4 font-medium text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[#333] text-sm">
+                            {filteredSubscribers.length > 0 ? (
+                                filteredSubscribers.map((subscriber) => (
+                                    <tr key={subscriber._id} className="hover:bg-white/5 transition-colors text-white">
+                                        <td className="px-6 py-4 flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-full bg-[#EAB308]/10 flex items-center justify-center hidden sm:flex">
+                                                <Mail className="w-4 h-4 text-[#EAB308]" />
+                                            </div>
+                                            <span className="truncate max-w-[200px] sm:max-w-none">{subscriber.email}</span>
+                                        </td>
+                                        <td className="px-6 py-4 text-gray-400 whitespace-nowrap">{new Date(subscriber.createdAt).toLocaleDateString()}</td>
+                                        <td className="px-6 py-4 text-right">
+                                            <button 
+                                                onClick={() => handleDelete(subscriber._id)}
+                                                className="p-2 hover:text-red-500 transition-colors"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={3} className="px-6 py-12 text-center text-gray-500">
+                                        {searchTerm ? "No matching subscribers found." : "No one has subscribed yet."}
                                     </td>
                                 </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan={3} className="px-6 py-12 text-center text-gray-500">
-                                    {searchTerm ? "No matching subscribers found." : "No one has subscribed yet."}
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {toast && (

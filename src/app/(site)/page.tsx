@@ -73,7 +73,7 @@ export default function Home() {
               href="/contact"
               className="px-8 py-4 rounded-md font-semibold bg-[#1E1E1E] text-white transition-all border border-[#333] w-full sm:w-auto flex items-center justify-center gap-2 hover:bg-[#333] active:scale-95"
             >
-              Let's Talk <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+              Let&apos;s Talk <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
             </Link>
           </motion.div>
         </div>
@@ -128,7 +128,7 @@ export default function Home() {
               transition={{ duration: 0.5 }}
             >
               <h2 className="text-3xl md:text-5xl font-heading font-bold text-white mb-6">Why Partner With PossiGeeTech?</h2>
-              <p className="text-gray-400 mb-8 text-lg">We don't just build software; we build solutions that solve real-world problems and drive business success. Our commitment to excellence sets us apart.</p>
+              <p className="text-gray-400 mb-8 text-lg">We don&apos;t just build software; we build solutions that solve real-world problems and drive business success. Our commitment to excellence sets us apart.</p>
 
               <div className="space-y-4">
                 {[

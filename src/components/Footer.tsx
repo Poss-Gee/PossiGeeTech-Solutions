@@ -1,12 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { Terminal, Facebook, Instagram, Twitter, Mail, MapPin, Phone, Loader2 } from "lucide-react";
+import { Facebook, Instagram, Twitter, Mail, MapPin, Phone, Loader2 } from "lucide-react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 export default function Footer() {
+    const pathname = usePathname();
     const [email, setEmail] = useState("");
+    
+    // Robust check for admin pages
+    const isAdmin = pathname?.toLowerCase().includes("/admin");
+    if (isAdmin) return null;
     const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
     const handleNewsletterSubmit = async (e: React.FormEvent) => {
@@ -37,9 +43,11 @@ export default function Footer() {
                     {/* Company Info */}
                     <div className="col-span-1 md:col-span-1">
                         <Link href="/" className="inline-block mb-4 group w-max">
-                            <img
+                            <Image
                                 src="/logo.png"
                                 alt="PossiGeeTech Logo"
+                                width={160}
+                                height={112}
                                 className="h-28 w-auto object-contain transition-transform group-hover:scale-105"
                             />
                         </Link>

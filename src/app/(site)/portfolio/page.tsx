@@ -6,7 +6,17 @@ import { ExternalLink, Github, MonitorSmartphone } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
-const mockProjects = [
+interface Project {
+    _id: string;
+    id?: string;
+    title: string;
+    category: string;
+    description: string;
+    techStack: string[];
+    imageUrl?: string;
+}
+
+const mockProjects: Project[] = [
     {
         _id: "1",
         title: "Campus Bite App",
@@ -42,7 +52,7 @@ const mockProjects = [
 ];
 
 export default function Portfolio() {
-    const [projects, setProjects] = useState<any[]>([]);
+    const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -99,9 +109,9 @@ export default function Portfolio() {
                                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#EAB308]"></div>
                             </div>
                         ) : (
-                            projects.map((project: any, index: number) => (
+                            projects.map((project: Project, index: number) => (
                             <motion.div
-                                key={project.id}
+                                key={project.id || project._id}
                                 className={`flex flex-col ${index % 2 === 1 ? 'lg:flex-row-reverse' : 'lg:flex-row'} gap-12 items-center`}
                                 whileHover={{ y: -5 }}
                                 initial={{ opacity: 0, y: 40 }}
@@ -172,7 +182,7 @@ export default function Portfolio() {
                 <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                     <h2 className="text-3xl md:text-5xl font-heading font-bold text-white mb-6">Have a project in mind?</h2>
                     <p className="text-gray-400 text-lg mb-10">
-                        Let's build something amazing together. Review our pricing plans or contact us for a custom quote.
+                        Let&apos;s build something amazing together. Review our pricing plans or contact us for a custom quote.
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
                         <Link
