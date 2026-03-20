@@ -32,18 +32,18 @@ export default function Navbar() {
 
     return (
         <nav className={`fixed w-full top-0 z-50 transition-all duration-500 ${scrolled
-            ? "bg-white/5 backdrop-blur-xl border-b border-white/10 py-2 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.3)]"
+            ? "bg-[#0A0A0A]/90 backdrop-blur-xl border-b border-white/10 py-1 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.3)]"
             : "bg-transparent border-b border-transparent py-4"
             }`}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between items-center h-20">
+                <div className={`flex justify-between items-center transition-all duration-500 ${scrolled ? "h-20" : "h-28"}`}>
 
                     {/* Logo */}
                     <Link href="/" className="flex items-center group">
                         <img
                             src="/logo.png"
                             alt="PossiGeeTech Logo"
-                            className="h-16 w-auto object-contain transition-transform group-hover:scale-110"
+                            className={`w-auto object-contain transition-all duration-500 group-hover:scale-105 ${scrolled ? "h-16" : "h-24"}`}
                         />
                     </Link>
 
