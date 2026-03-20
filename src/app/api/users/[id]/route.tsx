@@ -23,7 +23,10 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
     try {
         await dbConnect();
         const { id } = await params;
+        console.log("Delete attempt for ID:", id);
+        
         const deletedUser = await AdminUser.findByIdAndDelete(id);
+        console.log("Deleted user result:", deletedUser ? "FOUND & DELETED" : "NOT FOUND");
         
         if (!deletedUser) {
             return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });

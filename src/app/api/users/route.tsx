@@ -47,6 +47,7 @@ export async function POST(req: Request) {
         console.log("User created in DB:", newUser._id);
 
         // Send the invitation email
+        console.log("Resend API Key present:", !!process.env.RESEND_API_KEY);
         if (process.env.RESEND_API_KEY) {
             try {
                 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
