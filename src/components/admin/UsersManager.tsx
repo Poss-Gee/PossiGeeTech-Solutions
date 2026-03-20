@@ -89,7 +89,7 @@ export default function UsersManager() {
                     </thead>
                     <tbody className="divide-y divide-[#333] text-sm">
                         {users.map((user) => (
-                            <tr key={user.id} className="hover:bg-white/5 transition-colors text-white">
+                            <tr key={user._id || user.id} className="hover:bg-white/5 transition-colors text-white">
                                 <td className="px-6 py-4">
                                     <div className="flex items-center gap-3">
                                         <div className="w-10 h-10 rounded-full bg-[#EAB308]/10 flex items-center justify-center border border-[#EAB308]/20 text-[#EAB308] font-bold">
