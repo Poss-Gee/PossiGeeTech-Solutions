@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { Calendar, User, ArrowRight, Mail, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -151,10 +152,21 @@ export default function BlogListing() {
                         transition={{ duration: 0.5, delay: 0.2 }}
                     >
                         <div className="grid grid-cols-1 lg:grid-cols-2">
-                            <div className="h-64 lg:h-auto bg-white/5 relative flex items-center justify-center p-8 border-b lg:border-b-0 lg:border-r border-white/10">
-                                {/* Decorative background for featured image */}
-                                <div className="absolute inset-0 bg-gradient-to-br from-[#EAB308]/5 to-transparent z-0" />
-                                <h2 className="text-3xl lg:text-5xl font-heading font-bold text-white/20 uppercase tracking-widest text-center relative z-10 text-balance leading-tight max-w-[80%]">Featured Article</h2>
+                            <div className="h-80 lg:h-auto bg-[#1A1A1A] relative flex items-center justify-center border-b lg:border-b-0 lg:border-r border-white/10 overflow-hidden">
+                                {posts[0]?.imageUrl ? (
+                                    <Image 
+                                        src={posts[0].imageUrl} 
+                                        alt={posts[0].title} 
+                                        fill 
+                                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                        priority
+                                    />
+                                ) : (
+                                    <>
+                                        <div className="absolute inset-0 bg-gradient-to-br from-[#EAB308]/5 to-transparent z-0" />
+                                        <h2 className="text-3xl lg:text-5xl font-heading font-bold text-white/10 uppercase tracking-widest text-center relative z-10 text-balance leading-tight max-w-[80%]">Featured Article</h2>
+                                    </>
+                                )}
                             </div>
                             <div className="p-8 lg:p-12 bg-transparent flex flex-col justify-center">
                                 <div className="flex items-center gap-4 text-sm mb-6">
@@ -188,12 +200,18 @@ export default function BlogListing() {
                             posts.slice(1).map((post: any, index: number) => (
                             <motion.div
                                 key={post.id}
-                                className="bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden flex flex-col hover:border-[#EAB308]/50 hover:bg-white/10 transition-all group"
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.5, delay: index * 0.1 }}
                             >
+                                {post.imageUrl && (
+                                    <div className="relative aspect-[16/10] overflow-hidden border-b border-white/10">
+                                        <Image 
+                                            src={post.imageUrl} 
+                                            alt={post.title} 
+                                            fill 
+                                            className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                    </div>
+                                )}
                                 <div className="p-8 flex flex-col flex-grow">
                                     <div className="flex justify-between items-center mb-6">
                                         <span className="text-xs font-semibold px-3 py-1 bg-[#1E1E1E] border border-[#333] text-gray-300 rounded-full">
