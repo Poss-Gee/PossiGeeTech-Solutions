@@ -17,12 +17,7 @@ interface AdminUser {
 // No mock data needed anymore, fetching from database
 
 export default function UsersManager() {
-    const [users, setUsers] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
-    const [showInviteModal, setShowInviteModal] = useState(false);
-    const [newUser, setNewUser] = useState({ name: "", email: "", role: "Editor" });
-    const [saving, setSaving] = useState(false);
+    const [editingUserId, setEditingUserId] = useState<string | null>(null);
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -43,25 +38,29 @@ export default function UsersManager() {
         fetchUsers();
     }, []);
 
-    const handleInvite = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
         try {
-            const res = await fetch("/api/users", {
-                method: "POST",
+            const url = editingUserId ? `/api/users/${editingUserId}` : "/api/users";
+            const method = editingUserId ? "PATCH" : "POST";
+            
+            const res = await fetch(url, {
+                method,
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(newUser),
             });
             if (res.ok) {
-                setToast({ message: "User invited successfully", type: "success" });
+                setToast({ message: editingUserId ? "User updated successfully" : "User invited successfully", type: "success" });
                 setShowInviteModal(false);
+                setEditingUserId(null);
                 setNewUser({ name: "", email: "", role: "Editor" });
                 fetchUsers();
             } else {
-                setToast({ message: "Failed to invite user", type: "error" });
+                setToast({ message: "Failed to save user", type: "error" });
             }
         } catch (error) {
-            setToast({ message: "Error inviting user", type: "error" });
+            setToast({ message: "Error saving user", type: "error" });
         } finally {
             setSaving(false);
         }
@@ -86,9 +85,9 @@ export default function UsersManager() {
     };
 
     const startEdit = (user: any) => {
+        setEditingUserId(user._id || user.id);
         setNewUser({ name: user.name, email: user.email, role: user.role });
         setShowInviteModal(true);
-        // We'll treat this as "invite" for now but we could add update logic later
     };
 
     return (
@@ -181,8 +180,10 @@ export default function UsersManager() {
                         animate={{ opacity: 1, scale: 1 }}
                         className="bg-[#1A1A1A] border border-white/10 p-8 rounded-2xl w-full max-w-md shadow-2xl"
                     >
-                        <h3 className="text-2xl font-bold text-white mb-6">Invite New Member</h3>
-                        <form onSubmit={handleInvite} className="space-y-4">
+                        <h3 className="text-2xl font-bold text-white mb-6">
+                            {editingUserId ? "Edit Team Member" : "Invite New Member"}
+                        </h3>
+                        <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-gray-400">Full Name</label>
                                 <input 
@@ -219,7 +220,10 @@ export default function UsersManager() {
                             <div className="flex gap-4 mt-8">
                                 <button 
                                     type="button"
-                                    onClick={() => setShowInviteModal(false)}
+                                    onClick={() => {
+                                        setShowInviteModal(false);
+                                        setEditingUserId(null);
+                                    }}
                                     className="flex-1 px-4 py-3 bg-white/5 text-white font-bold rounded-md hover:bg-white/10 transition-colors"
                                 >
                                     Cancel
@@ -230,7 +234,7 @@ export default function UsersManager() {
                                     className="flex-1 px-4 py-3 bg-[#EAB308] text-black font-bold rounded-md hover:bg-[#CA8A04] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                                 >
                                     {saving && <Loader2 className="w-4 h-4 animate-spin" />}
-                                    Send Invite
+                                    {editingUserId ? "Update Member" : "Send Invite"}
                                 </button>
                             </div>
                         </form>
