@@ -1,7 +1,31 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageSquare, Mail, Briefcase, Users, Settings, LogOut, Clock, Loader2, CheckCircle2, AlertCircle, Newspaper, Menu } from "lucide-react";
+import { 
+    LayoutDashboard, 
+    MessageSquare, 
+    BookOpen, 
+    Briefcase, 
+    Users, 
+    Bell, 
+    Settings, 
+    LogOut,
+    Menu,
+    X,
+    ChevronRight,
+    Search,
+    Filter,
+    MoreVertical,
+    CheckCircle2,
+    AlertCircle,
+    Info,
+    FileText,
+    Mail,
+    Newspaper,
+    Clock,
+    Loader2,
+    ExternalLink
+} from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
@@ -10,7 +34,6 @@ import PortfolioManager from "@/components/admin/PortfolioManager";
 import NewsletterManager from "@/components/admin/NewsletterManager";
 import UsersManager from "@/components/admin/UsersManager";
 import SettingsManager from "@/components/admin/SettingsManager";
-import { X, ExternalLink } from "lucide-react";
 
 interface AdminMessage {
     _id: string;
@@ -32,10 +55,30 @@ export default function AdminDashboard() {
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [messages, setMessages] = useState<AdminMessage[]>([]);
     const [loading, setLoading] = useState(true);
+    const [demoMode, setDemoMode] = useState(false);
     const [connected, setConnected] = useState<boolean | null>(null); 
     const [errorMsg, setErrorMsg] = useState<string>("");
     const [selectedMessage, setSelectedMessage] = useState<AdminMessage | null>(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    // Mock data for Demo Mode
+    const mockStats = { messages: 12, subscribers: 48, proposals: 3 };
+    const mockMessages: AdminMessage[] = [
+        { _id: "m1", name: "Sarah Connor", email: "sarah@cyberdyne.com", projectType: "Security", message: "Protect the future.", createdAt: new Date().toISOString() },
+        { _id: "m2", name: "John Doe", email: "john@example.com", projectType: "Web App", message: "Need a modern portfolio.", createdAt: new Date().toISOString() },
+        { _id: "m3", name: "Emily Watson", email: "emily@design.com", projectType: "UI/UX", message: "Looking for a website redesign.", createdAt: new Date().toISOString() }
+    ];
+
+    useEffect(() => {
+        const saved = localStorage.getItem("adminDemoMode");
+        if (saved === "true") setDemoMode(true);
+    }, []);
+
+    const toggleDemoMode = () => {
+        const newVal = !demoMode;
+        setDemoMode(newVal);
+        localStorage.setItem("adminDemoMode", String(newVal));
+    };
 
     useEffect(() => {
         const fetchDashboardData = async () => {
@@ -213,8 +256,19 @@ export default function AdminDashboard() {
                 {activeView === "messages" && (
                     <>
                         <header className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                            <h1 className="text-2xl md:text-3xl font-bold text-white">Inbox & Requests</h1>
+                            <div className="flex flex-col">
+                                <h1 className="text-2xl md:text-3xl font-bold text-white">
+                                    Admin Dashboard
+                                </h1>
+                                <p className="text-gray-400 text-sm">Welcome back, Administrator</p>
+                            </div>
                             <div className="flex items-center gap-4">
+                                {demoMode && (
+                                    <div className="flex items-center gap-2 px-3 py-1 bg-[#EAB308]/10 border border-[#EAB308]/20 rounded-full text-[#EAB308] text-xs font-bold animate-pulse">
+                                        <div className="w-2 h-2 rounded-full bg-[#EAB308]" />
+                                        DEMO MODE ACTIVE
+                                    </div>
+                                )}
                                 <div className="w-10 h-10 rounded-full bg-white/10 border border-white/10 flex items-center justify-center">
                                     <span className="text-[#EAB308] font-bold">A</span>
                                 </div>
@@ -222,41 +276,78 @@ export default function AdminDashboard() {
                         </header>
                         
                         {/* Connection Status Banners */}
-                        {connected === false && (
-                            <div className="mb-8 p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3 text-red-400">
-                                <AlertCircle className="w-5 h-5 animate-pulse" />
-                                <div className="flex-1">
-                                    <p className="font-bold text-sm">Database Connection Failed (Production)</p>
-                                    <p className="text-xs text-red-300 mb-1">{errorMsg}</p>
-                                    <p className="text-xs text-red-300/60 font-medium italic">Check your Vercel settings for <span className="font-mono bg-red-500/20 px-1 rounded not-italic">MONGODB_URI</span>.</p>
+                        {connected === false && !demoMode && (
+                            <div className="mb-8 p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center justify-between gap-3 text-red-400">
+                                <div className="flex items-center gap-3">
+                                    <AlertCircle className="w-5 h-5 animate-pulse" />
+                                    <div className="flex-1">
+                                        <p className="font-bold text-sm">Database Connection Failed (Production)</p>
+                                        <p className="text-xs text-red-300 mb-1">{errorMsg}</p>
+                                        <p className="text-xs text-red-300/60 font-medium italic">Check your Vercel settings for <span className="font-mono bg-red-500/20 px-1 rounded not-italic">MONGODB_URI</span>.</p>
+                                    </div>
                                 </div>
+                                <button 
+                                    onClick={toggleDemoMode}
+                                    className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg text-xs font-bold transition-all whitespace-nowrap"
+                                >
+                                    Try Demo Mode
+                                </button>
                             </div>
                         )}
 
-                        {connected === true && (stats?.messages === 0 && stats?.subscribers === 0) && (
-                            <div className="mb-8 p-4 bg-[#EAB308]/10 border border-[#EAB308]/20 rounded-xl flex items-center gap-3 text-[#EAB308]">
-                                <CheckCircle2 className="w-5 h-5" />
-                                <div className="flex-1">
-                                    <p className="font-bold text-sm">Database Connected (No Content Found)</p>
-                                    <p className="text-sm opacity-80">Your database is connected, but it's currently empty. Once you add real blogs or receive messages, they will appear here.</p>
+                        {connected === true && (stats?.messages === 0 && stats?.subscribers === 0) && !demoMode && (
+                            <div className="mb-8 p-4 bg-[#EAB308]/10 border border-[#EAB308]/20 rounded-xl flex items-center justify-between gap-3 text-[#EAB308]">
+                                <div className="flex items-center gap-3">
+                                    <CheckCircle2 className="w-5 h-5" />
+                                    <div className="flex-1">
+                                        <p className="font-bold text-sm">Database Connected (No Content Found)</p>
+                                        <p className="text-sm opacity-80">Your database is connected, but it's currently empty. Once you add real blogs or receive messages, they will appear here.</p>
+                                    </div>
                                 </div>
+                                <button 
+                                    onClick={toggleDemoMode}
+                                    className="px-4 py-2 bg-[#EAB308]/20 hover:bg-[#EAB308]/30 border border-[#EAB308]/30 rounded-lg text-xs font-bold transition-all whitespace-nowrap"
+                                >
+                                    Enable Demo Mode
+                                </button>
+                            </div>
+                        )}
+
+                        {demoMode && (
+                            <div className="mb-8 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center justify-between gap-3 text-blue-400">
+                                <div className="flex items-center gap-3">
+                                    <Info className="w-5 h-5" />
+                                    <div className="flex-1">
+                                        <p className="font-bold text-sm">Showing Preview Content (Demo Mode)</p>
+                                        <p className="text-sm opacity-80 text-blue-300/80">You are currently viewing high-quality sample data. Switch back at any time to see your real database.</p>
+                                    </div>
+                                </div>
+                                <button 
+                                    onClick={toggleDemoMode}
+                                    className="px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg text-xs font-bold transition-all whitespace-nowrap"
+                                >
+                                    View Real Data
+                                </button>
                             </div>
                         )}
 
                         {/* Stats */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                            <div className="bg-[#1A1A1A] border border-[#333] p-6 rounded-xl">
-                                <div className="text-gray-400 text-sm font-medium mb-2">Total Messages</div>
-                                <div className="text-3xl font-bold text-white">{stats?.messages || 0}</div>
-                            </div>
-                            <div className="bg-[#1A1A1A] border border-[#333] p-6 rounded-xl">
-                                <div className="text-gray-400 text-sm font-medium mb-2">New Subscribers</div>
-                                <div className="text-3xl font-bold text-white">{stats?.subscribers || 0}</div>
-                            </div>
-                            <div className="bg-[#1A1A1A] border border-[#333] p-6 rounded-xl">
-                                <div className="text-gray-400 text-sm font-medium mb-2">Pending Proposals</div>
-                                <div className="text-3xl font-bold text-[#EAB308]">{stats?.proposals || 0}</div>
-                            </div>
+                            {[
+                                { label: "Total Messages", value: demoMode ? mockStats.messages : (stats?.messages || 0), icon: MessageSquare, color: "text-blue-500", bg: "bg-blue-500/10" },
+                                { label: "Project Proposals", value: demoMode ? mockStats.proposals : (stats?.proposals || 0), icon: FileText, color: "text-[#EAB308]", bg: "bg-[#EAB308]/10" },
+                                { label: "Newsletter", value: demoMode ? mockStats.subscribers : (stats?.subscribers || 0), icon: Users, color: "text-green-500", bg: "bg-green-500/10" }
+                            ].map((item, idx) => (
+                                <div key={idx} className="bg-[#1A1A1A] border border-[#333] p-6 rounded-xl flex items-center gap-4">
+                                    <div className={`p-3 rounded-full ${item.bg}`}>
+                                        <item.icon className={`w-6 h-6 ${item.color}`} />
+                                    </div>
+                                    <div>
+                                        <div className="text-gray-400 text-sm font-medium mb-1">{item.label}</div>
+                                        <div className="text-3xl font-bold text-white">{item.value}</div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
 
                         {/* Messages Table */}
@@ -281,10 +372,14 @@ export default function AdminDashboard() {
                                             <th className="px-6 py-4 font-medium text-right">Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-[#333] text-sm">
-                                        {messages.length > 0 ? (
-                                            messages.map((msg) => (
-                                                <tr key={msg._id} className="hover:bg-white/5 transition-colors">
+                                    <tbody className="divide-y divide-white/5">
+                                        {(demoMode ? mockMessages : messages).length > 0 ? (
+                                            (demoMode ? mockMessages : messages).map((msg) => (
+                                                <tr 
+                                                    key={msg._id}
+                                                    className="hover:bg-white/5 transition-colors cursor-pointer group"
+                                                    onClick={() => setSelectedMessage(msg)}
+                                                >
                                                     <td className="px-6 py-4 text-white font-medium">{msg.name}</td>
                                                     <td className="px-6 py-4 text-gray-400">{msg.email}</td>
                                                     <td className="px-6 py-4 text-gray-400">
@@ -298,7 +393,7 @@ export default function AdminDashboard() {
                                                     </td>
                                                     <td className="px-6 py-4 text-right">
                                                         <button 
-                                                            onClick={() => setSelectedMessage(msg)}
+                                                            onClick={(e) => { e.stopPropagation(); setSelectedMessage(msg); }}
                                                             className="text-[#EAB308] hover:text-[#CA8A04] font-medium transition-colors cursor-pointer"
                                                         >
                                                             Review
@@ -321,19 +416,19 @@ export default function AdminDashboard() {
                 )}
 
                 {activeView === "blog" && (
-                    <BlogManager />
+                    <BlogManager demoMode={demoMode} />
                 )}
 
                 {activeView === "portfolio" && (
-                    <PortfolioManager />
+                    <PortfolioManager demoMode={demoMode} />
                 )}
 
                 {activeView === "newsletter" && (
-                    <NewsletterManager />
+                    <NewsletterManager demoMode={demoMode} />
                 )}
 
                 {activeView === "users" && (
-                    <UsersManager />
+                    <UsersManager demoMode={demoMode} />
                 )}
 
                 {activeView === "settings" && (

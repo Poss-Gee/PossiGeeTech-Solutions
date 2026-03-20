@@ -14,7 +14,7 @@ interface AdminUser {
     status: "Active" | "Pending";
 }
 
-export default function UsersManager() {
+export default function UsersManager({ demoMode = false }: { demoMode?: boolean }) {
     const [users, setUsers] = useState<AdminUser[]>([]);
     const [loading, setLoading] = useState(true);
     const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
@@ -22,6 +22,11 @@ export default function UsersManager() {
     const [newUser, setNewUser] = useState({ name: "", email: "", role: "Editor" });
     const [saving, setSaving] = useState(false);
     const [editingUserId, setEditingUserId] = useState<string | null>(null);
+
+    const mockUsers: AdminUser[] = [
+        { id: "mock-u1", name: "Ofori Michael", email: "admin@possigeetech.com", role: "Admin", status: "Active" },
+        { id: "mock-u2", name: "Sarah Jenkins", email: "sarah@design.io", role: "Editor", status: "Active" }
+    ];
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -135,7 +140,7 @@ export default function UsersManager() {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-[#333] text-sm">
-                        {users.map((user) => (
+                        {(users.length > 0 ? users : (demoMode ? mockUsers : [])).map((user) => (
                             <tr key={user._id || user.id} className="hover:bg-white/5 transition-colors text-white">
                                 <td className="px-6 py-4">
                                     <div className="flex items-center gap-3">

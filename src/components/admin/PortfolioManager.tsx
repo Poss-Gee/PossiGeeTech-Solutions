@@ -16,7 +16,7 @@ interface Project {
     createdAt: string;
 }
 
-export default function PortfolioManager() {
+export default function PortfolioManager({ demoMode = false }: { demoMode?: boolean }) {
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
     const [isAdding, setIsAdding] = useState(false);
@@ -31,6 +31,27 @@ export default function PortfolioManager() {
         sourceUrl: ""
     });
     const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+
+    const mockProjects: Project[] = [
+        {
+            _id: "mock-p1",
+            title: "E-Commerce Platform",
+            category: "Web Application",
+            description: "A full-featured online store with real-time inventory and payment integration.",
+            techStack: ["Next.js", "TailwindCSS", "Stripe", "MongoDB"],
+            imageUrl: "https://images.unsplash.com/photo-1557821552-17105176677c?q=80&w=2089&auto=format&fit=crop",
+            createdAt: new Date().toISOString()
+        },
+        {
+            _id: "mock-p2",
+            title: "SaaS Dashboard",
+            category: "Enterprise",
+            description: "Analytics dashboard for managing team productivity and resource allocation.",
+            techStack: ["React", "Chart.js", "Node.js", "PostgreSQL"],
+            imageUrl: "https://images.unsplash.com/photo-1551288049-bbbda536339a?q=80&w=2070&auto=format&fit=crop",
+            createdAt: new Date().toISOString()
+        }
+    ];
 
     useEffect(() => {
         fetchProjects();
@@ -252,8 +273,8 @@ export default function PortfolioManager() {
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {projects.length > 0 ? (
-                    projects.map((project) => (
+                {(projects.length > 0 ? projects : (demoMode ? mockProjects : [])).length > 0 ? (
+                    (projects.length > 0 ? projects : (demoMode ? mockProjects : [])).map((project) => (
                         <div key={project._id} className="bg-[#1A1A1A] border border-[#333] rounded-xl overflow-hidden group">
                             <div className="aspect-video bg-white/5 relative flex items-center justify-center border-b border-[#333]">
                                 {project.imageUrl ? (

@@ -19,7 +19,7 @@ interface BlogPost {
     createdAt: string;
 }
 
-export default function BlogManager() {
+export default function BlogManager({ demoMode = false }: { demoMode?: boolean }) {
     const [posts, setPosts] = useState<BlogPost[]>([]);
     const [loading, setLoading] = useState(true);
     const [isAdding, setIsAdding] = useState(false);
@@ -273,8 +273,30 @@ export default function BlogManager() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[#333] text-sm">
-                            {posts.length > 0 ? (
-                                posts.map((post) => (
+                            {(posts.length > 0 ? posts : (demoMode ? mockBlogPosts.map(m => ({
+                                _id: m.id,
+                                title: m.title,
+                                excerpt: m.excerpt,
+                                content: m.content || "",
+                                category: m.category,
+                                author: m.author,
+                                readTime: m.readTime,
+                                slug: m.slug,
+                                imageUrl: m.imageUrl,
+                                createdAt: m.date
+                            })) : [])).length > 0 ? (
+                                (posts.length > 0 ? posts : (demoMode ? mockBlogPosts.map(m => ({
+                                    _id: m.id,
+                                    title: m.title,
+                                    excerpt: m.excerpt,
+                                    content: m.content || "",
+                                    category: m.category,
+                                    author: m.author,
+                                    readTime: m.readTime,
+                                    slug: m.slug,
+                                    imageUrl: m.imageUrl,
+                                    createdAt: m.date
+                                })) : [])).map((post: any) => (
                                     <tr key={post._id} className="hover:bg-white/5 transition-colors text-white">
                                         <td className="px-6 py-4 font-medium max-w-[200px] truncate">{post.title}</td>
                                         <td className="px-6 py-4 text-center">

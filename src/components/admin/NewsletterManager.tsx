@@ -10,11 +10,17 @@ interface Subscriber {
     createdAt: string;
 }
 
-export default function NewsletterManager() {
+export default function NewsletterManager({ demoMode = false }: { demoMode?: boolean }) {
     const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+
+    const mockSubscribers: Subscriber[] = [
+        { _id: "mock-s1", email: "tech-enthusiast@example.com", createdAt: new Date().toISOString() },
+        { _id: "mock-s2", email: "future-dev@gmail.com", createdAt: new Date().toISOString() },
+        { _id: "mock-s3", email: "innovation@techcorp.io", createdAt: new Date().toISOString() }
+    ];
 
     useEffect(() => {
         fetchSubscribers();
@@ -116,8 +122,8 @@ export default function NewsletterManager() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[#333] text-sm">
-                            {filteredSubscribers.length > 0 ? (
-                                filteredSubscribers.map((subscriber) => (
+                            {(filteredSubscribers.length > 0 ? filteredSubscribers : (demoMode && searchTerm === "" ? mockSubscribers : [])).length > 0 ? (
+                                (filteredSubscribers.length > 0 ? filteredSubscribers : (demoMode && searchTerm === "" ? mockSubscribers : [])).map((subscriber) => (
                                     <tr key={subscriber._id} className="hover:bg-white/5 transition-colors text-white">
                                         <td className="px-6 py-4 flex items-center gap-3">
                                             <div className="w-8 h-8 rounded-full bg-[#EAB308]/10 flex items-center justify-center hidden sm:flex">
