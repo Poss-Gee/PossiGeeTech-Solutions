@@ -1,13 +1,12 @@
-"use client";
-
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { ExternalLink, Github, MonitorSmartphone } from "lucide-react";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
-const projects = [
+const mockProjects = [
     {
-        id: 1,
+        _id: "1",
         title: "Campus Bite App",
         category: "Mobile App",
         description: "A mobile application designed to help university students order food easily on campus and track their orders in real time.",
@@ -15,7 +14,7 @@ const projects = [
         imageUrl: "/images/campus-bite.png"
     },
     {
-        id: 2,
+        _id: "2",
         title: "University Portal System",
         category: "Web Application",
         description: "A digital portal that helps universities manage student records, courses, and communication between students and administrators.",
@@ -23,7 +22,7 @@ const projects = [
         imageUrl: "/images/portal.jpg"
     },
     {
-        id: 3,
+        _id: "3",
         title: "Business Website Platform",
         category: "Web Application",
         description: "A modern website platform built for small businesses to showcase their services and connect with customers online.",
@@ -31,7 +30,7 @@ const projects = [
         imageUrl: "/images/business.jpg"
     },
     {
-        id: 4,
+        _id: "4",
         title: "Study Group Application",
         category: "Mobile App",
         description: "A mobile application designed for university students to collaborate, share study materials, and organize group discussions.",
@@ -41,6 +40,28 @@ const projects = [
 ];
 
 export default function Portfolio() {
+    const [projects, setProjects] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchProjects = async () => {
+            try {
+                const res = await fetch("/api/portfolio");
+                const data = await res.json();
+                if (data.success && data.data.length > 0) {
+                    setProjects(data.data);
+                } else {
+                    setProjects(mockProjects);
+                }
+            } catch (error) {
+                console.error("Failed to fetch projects:", error);
+                setProjects(mockProjects);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchProjects();
+    }, []);
     return (
         <div className="flex flex-col min-h-screen pt-20">
 
@@ -71,7 +92,12 @@ export default function Portfolio() {
             <section className="py-20 bg-[#111]">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="space-y-24">
-                        {projects.map((project, index) => (
+                        {loading ? (
+                            <div className="flex justify-center py-20">
+                                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#EAB308]"></div>
+                            </div>
+                        ) : (
+                            projects.map((project: any, index: number) => (
                             <motion.div
                                 key={project.id}
                                 className={`flex flex-col ${index % 2 === 1 ? 'lg:flex-row-reverse' : 'lg:flex-row'} gap-12 items-center`}
@@ -114,9 +140,9 @@ export default function Portfolio() {
 
                                     <div className="pt-4 border-t border-[#333]">
                                         <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-3">Technologies Used</h3>
-                                        <div className="flex flex-wrap gap-2">
-                                            {project.techStack.map(tech => (
-                                                <span key={tech} className="px-3 py-1 bg-white/5 backdrop-blur-sm border border-white/10 rounded-md text-gray-300 text-sm">
+                                        <div className="flex flex-wrap gap-3 mb-8">
+                                            {project.techStack.map((tech: string) => (
+                                                <span key={tech} className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs font-medium text-gray-300">
                                                     {tech}
                                                 </span>
                                             ))}
@@ -131,11 +157,11 @@ export default function Portfolio() {
                                             Source <Github className="w-4 h-4" />
                                         </Link>
                                     </div>
-                                </div>
-
-                            </motion.div>
-                        ))}
-                    </div>
+                                </div >
+                            </motion.div >
+                        ))
+                        )}
+                    </div >
                 </div>
             </section>
 

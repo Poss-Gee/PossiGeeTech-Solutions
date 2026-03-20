@@ -3,10 +3,10 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Calendar, User, ArrowRight, Mail, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // Mock blog data
-const blogPosts = [
+const mockBlogPosts = [
     {
         id: "1",
         title: "10 Essential UI/UX Principles for Modern Web Apps",
@@ -70,8 +70,30 @@ const blogPosts = [
 ];
 
 export default function BlogListing() {
+    const [posts, setPosts] = useState<any[]>([]);
+    const [loadingPosts, setLoadingPosts] = useState(true);
     const [email, setEmail] = useState("");
     const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+
+    useEffect(() => {
+        const fetchPosts = async () => {
+            try {
+                const res = await fetch("/api/blog");
+                const data = await res.json();
+                if (data.success && data.data.length > 0) {
+                    setPosts(data.data);
+                } else {
+                    setPosts(mockBlogPosts);
+                }
+            } catch (error) {
+                console.error("Failed to fetch posts:", error);
+                setPosts(mockBlogPosts);
+            } finally {
+                setLoadingPosts(false);
+            }
+        };
+        fetchPosts();
+    }, []);
 
     const handleNewsletterSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -136,16 +158,16 @@ export default function BlogListing() {
                             </div>
                             <div className="p-8 lg:p-12 bg-transparent flex flex-col justify-center">
                                 <div className="flex items-center gap-4 text-sm mb-6">
-                                    <span className="px-3 py-1 bg-[#EAB308]/10 text-[#EAB308] rounded-full font-medium">Design</span>
-                                    <span className="text-gray-400 flex items-center gap-1.5"><Calendar className="w-4 h-4" /> Oct 12, 2026</span>
+                                    <span className="px-3 py-1 bg-[#EAB308]/10 text-[#EAB308] rounded-full font-medium">{posts[0]?.category || "Design"}</span>
+                                    <span className="text-gray-400 flex items-center gap-1.5"><Calendar className="w-4 h-4" /> {posts[0]?.date || "Oct 12, 2026"}</span>
                                 </div>
                                 <h2 className="text-2xl md:text-4xl font-bold text-white mb-4 lg:mb-6 group-hover:text-[#EAB308] transition-colors">
-                                    10 Essential UI/UX Principles for Modern Web Apps
+                                    {posts[0]?.title || "10 Essential UI/UX Principles for Modern Web Apps"}
                                 </h2>
                                 <p className="text-gray-400 text-lg mb-8 line-clamp-3">
-                                    Discover the core principles that separate good interfaces from great ones. Learn how typography, spacing, and psychology impact user behavior and drive better business outcomes.
+                                    {posts[0]?.excerpt || "Discover the core principles that separate good interfaces from great ones."}
                                 </p>
-                                <Link href={`/blog/essential-ui-ux-principles`} className="inline-flex items-center font-semibold text-[#EAB308] hover:text-[#FACC15] transition-colors mt-auto w-fit border border-[#EAB308] rounded-md px-4 py-2 hover:bg-[#EAB308]/10">
+                                <Link href={`/blog/${posts[0]?.slug || "essential-ui-ux-principles"}`} className="inline-flex items-center font-semibold text-[#EAB308] hover:text-[#FACC15] transition-colors mt-auto w-fit border border-[#EAB308] rounded-md px-4 py-2 hover:bg-[#EAB308]/10">
                                     Read Full Article <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-2" />
                                 </Link>
                             </div>
@@ -158,7 +180,12 @@ export default function BlogListing() {
             <section className="py-20 bg-[#111]">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {blogPosts.slice(1).map((post, index) => (
+                        {loadingPosts ? (
+                            <div className="col-span-full py-20 flex justify-center">
+                                <Loader2 className="w-10 h-10 text-[#EAB308] animate-spin" />
+                            </div>
+                        ) : (
+                            posts.slice(1).map((post: any, index: number) => (
                             <motion.div
                                 key={post.id}
                                 className="bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden flex flex-col hover:border-[#EAB308]/50 hover:bg-white/10 transition-all group"
@@ -197,7 +224,8 @@ export default function BlogListing() {
                                     </div>
                                 </div>
                             </motion.div>
-                        ))}
+                            ))
+                        )}
                     </div>
 
                     <div className="mt-16 text-center">
