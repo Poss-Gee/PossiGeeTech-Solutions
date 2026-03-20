@@ -44,27 +44,12 @@ export default function BlogManager() {
         try {
             const res = await fetch("/api/blog");
             const data = await res.json();
-            
-            let realPosts = [];
             if (data.success) {
-                realPosts = data.data || [];
+                setPosts(data.data || []);
             }
-            
-            // Merge mock posts that don't exist in DB by title
-            const merged = [...realPosts, ...mockBlogPosts.filter(m => !realPosts.find((r: any) => r.title === m.title)).map(m => ({
-                ...m,
-                _id: m.id, // Use mock ID as _id
-                createdAt: new Date().toISOString() // Placeholder
-            }))];
-            setPosts(merged);
         } catch (error) {
             console.error("Failed to fetch posts:", error);
-            // Fallback to only mock posts on network/parsing error
-            setPosts(mockBlogPosts.map(m => ({
-                ...m,
-                _id: m.id,
-                createdAt: new Date().toISOString()
-            })) as BlogPost[]);
+            setPosts([]);
         } finally {
             setLoading(false);
         }

@@ -15,7 +15,7 @@ export async function GET() {
             stats: {
                 messages: messageCount,
                 subscribers: subscriberCount,
-                proposals: Math.floor(messageCount * 0.7) // Mocking proposals based on messages for now
+                proposals: 0 
             },
             messages: latestMessages
         });

@@ -42,23 +42,12 @@ export default function AdminDashboard() {
                 const data = await res.json();
                 if (data.stats) {
                     setStats(data.stats);
-                    setMessages(data.messages);
-                } else {
-                    // Fallback if success:false or missing data
-                    setStats({ messages: 12, subscribers: 48, proposals: 3 });
-                    setMessages([
-                        { _id: "m1", name: "Sarah Connor", email: "sarah@cyberdyne.com", projectType: "Security", message: "Protect the future.", createdAt: new Date().toISOString() },
-                        { _id: "m2", name: "John Doe", email: "john@example.com", projectType: "Web App", message: "Need a modern portfolio.", createdAt: new Date().toISOString() }
-                    ]);
+                    setMessages(data.messages || []);
                 }
             } catch (error) {
                 console.error("Failed to fetch dashboard data:", error);
-                // Fallback on error (common in prod without DB)
-                setStats({ messages: 12, subscribers: 48, proposals: 3 });
-                setMessages([
-                    { _id: "m1", name: "Sarah Connor", email: "sarah@cyberdyne.com", projectType: "Security", message: "Protect the future.", createdAt: new Date().toISOString() },
-                    { _id: "m2", name: "John Doe", email: "john@example.com", projectType: "Web App", message: "Need a modern portfolio.", createdAt: new Date().toISOString() }
-                ]);
+                setStats({ messages: 0, subscribers: 0, proposals: 0 });
+                setMessages([]);
             } finally {
                 setLoading(false);
             }
@@ -74,6 +63,21 @@ export default function AdminDashboard() {
             month: "short",
             year: "numeric"
         });
+    };
+
+    const fetchAllMessages = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch("/api/admin/messages");
+            const data = await res.json();
+            if (data.success) {
+                setMessages(data.data || []);
+            }
+        } catch (error) {
+            console.error("Failed to fetch all messages:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     if (loading) {
@@ -226,7 +230,12 @@ export default function AdminDashboard() {
                         <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden shadow-2xl">
                             <div className="p-6 border-b border-white/10 flex justify-between items-center">
                                 <h2 className="text-xl font-bold text-white">Recent Submissions</h2>
-                                <button className="text-sm text-[#EAB308] hover:underline cursor-pointer">View All</button>
+                                <button 
+                                    onClick={fetchAllMessages}
+                                    className="text-sm text-[#EAB308] hover:underline cursor-pointer"
+                                >
+                                    View All
+                                </button>
                             </div>
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left min-w-[700px]">
