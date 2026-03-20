@@ -2,11 +2,12 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import AdminUser from "@/models/AdminUser";
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         await dbConnect();
+        const { id } = await params;
         const body = await req.json();
-        const updatedUser = await AdminUser.findByIdAndUpdate(params.id, body, { new: true });
+        const updatedUser = await AdminUser.findByIdAndUpdate(id, body, { new: true });
         
         if (!updatedUser) {
             return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
@@ -18,10 +19,11 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     }
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         await dbConnect();
-        const deletedUser = await AdminUser.findByIdAndDelete(params.id);
+        const { id } = await params;
+        const deletedUser = await AdminUser.findByIdAndDelete(id);
         
         if (!deletedUser) {
             return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
