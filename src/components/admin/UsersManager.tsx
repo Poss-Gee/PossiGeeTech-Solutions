@@ -14,9 +14,13 @@ interface AdminUser {
     status: "Active" | "Pending";
 }
 
-// No mock data needed anymore, fetching from database
-
 export default function UsersManager() {
+    const [users, setUsers] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+    const [showInviteModal, setShowInviteModal] = useState(false);
+    const [newUser, setNewUser] = useState({ name: "", email: "", role: "Editor" });
+    const [saving, setSaving] = useState(false);
     const [editingUserId, setEditingUserId] = useState<string | null>(null);
 
     const fetchUsers = async () => {
@@ -90,6 +94,14 @@ export default function UsersManager() {
         setShowInviteModal(true);
     };
 
+    if (loading && users.length === 0) {
+        return (
+            <div className="flex justify-center py-20">
+                <Loader2 className="w-10 h-10 text-[#EAB308] animate-spin" />
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-8">
             <header className="flex justify-between items-center">
@@ -99,6 +111,7 @@ export default function UsersManager() {
                 </div>
                 <button 
                     onClick={() => {
+                        setEditingUserId(null);
                         setNewUser({ name: "", email: "", role: "Editor" });
                         setShowInviteModal(true);
                     }}
@@ -162,13 +175,6 @@ export default function UsersManager() {
                                 </td>
                             </tr>
                         ))}
-                        {users.length === 0 && !loading && (
-                            <tr>
-                                <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
-                                    No team members found.
-                                </td>
-                            </tr>
-                        )}
                     </tbody>
                 </table>
             </div>
