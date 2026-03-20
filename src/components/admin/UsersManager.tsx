@@ -12,15 +12,15 @@ interface AdminUser {
     status: "Active" | "Pending";
 }
 
-const mockUsers: AdminUser[] = [
-    { id: "1", name: "Possi Gee", email: "possigee96@gmail.com", role: "Admin", status: "Active" },
-    { id: "2", name: "Ofori Michael", email: "ofori@possigeetech.com", role: "Editor", status: "Active" }
-];
+// No mock data needed anymore, fetching from database
 
 export default function UsersManager() {
     const [users, setUsers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+    const [showInviteModal, setShowInviteModal] = useState(false);
+    const [newUser, setNewUser] = useState({ name: "", email: "", role: "Editor" });
+    const [saving, setSaving] = useState(false);
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -40,6 +40,30 @@ export default function UsersManager() {
     useEffect(() => {
         fetchUsers();
     }, []);
+
+    const handleInvite = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSaving(true);
+        try {
+            const res = await fetch("/api/users", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(newUser),
+            });
+            if (res.ok) {
+                setToast({ message: "User invited successfully", type: "success" });
+                setShowInviteModal(false);
+                setNewUser({ name: "", email: "", role: "Editor" });
+                fetchUsers();
+            } else {
+                setToast({ message: "Failed to invite user", type: "error" });
+            }
+        } catch (error) {
+            setToast({ message: "Error inviting user", type: "error" });
+        } finally {
+            setSaving(false);
+        }
+    };
 
     const handleDelete = async (id: string, isMock?: boolean) => {
         if (id === "1") {
@@ -71,7 +95,10 @@ export default function UsersManager() {
                     <h2 className="text-3xl font-bold text-white">Team Management</h2>
                     <p className="text-gray-400 mt-1">Manage administrative access to the platform.</p>
                 </div>
-                <button className="flex items-center gap-2 px-4 py-2 bg-[#EAB308] text-black font-bold rounded-md hover:bg-[#CA8A04] transition-colors">
+                <button 
+                    onClick={() => setShowInviteModal(true)}
+                    className="flex items-center gap-2 px-4 py-2 bg-[#EAB308] text-black font-bold rounded-md hover:bg-[#CA8A04] transition-colors"
+                >
                     <UserPlus className="w-5 h-5" />
                     Invite Member
                 </button>

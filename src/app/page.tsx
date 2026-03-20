@@ -89,10 +89,10 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              { icon: Globe, title: "Web Development", desc: "Modern, responsive, and high-performance websites." },
-              { icon: Smartphone, title: "Mobile Apps", desc: "Powerful user-friendly mobile applications." },
-              { icon: Palette, title: "UI/UX Design", desc: "Visually appealing and user-friendly interfaces." },
-              { icon: Code, title: "Software Dev", desc: "Custom software and automation tools." },
+              { id: "web-dev", icon: Globe, title: "Web Development", desc: "Modern, responsive, and high-performance websites." },
+              { id: "mobile-apps", icon: Smartphone, title: "Mobile Apps", desc: "Powerful user-friendly mobile applications." },
+              { id: "ui-ux", icon: Palette, title: "UI/UX Design", desc: "Visually appealing and user-friendly interfaces." },
+              { id: "software-dev", icon: Code, title: "Software Dev", desc: "Custom software and automation tools." },
             ].map((service, index) => (
               <motion.div
                 key={index}
@@ -108,7 +108,7 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-3">{service.title}</h3>
                 <p className="text-gray-400 mb-6 flex-grow">{service.desc}</p>
-                <Link href="/services" className="inline-flex items-center text-[#EAB308] font-medium hover:text-[#FACC15] transition-colors mt-auto">
+                <Link href={`/services#${service.id}`} className="inline-flex items-center text-[#EAB308] font-medium hover:text-[#FACC15] transition-colors mt-auto">
                   Learn more <ChevronRight className="w-4 h-4 ml-1" />
                 </Link>
               </motion.div>

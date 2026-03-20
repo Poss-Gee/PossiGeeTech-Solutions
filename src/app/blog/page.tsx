@@ -81,8 +81,11 @@ export default function BlogListing() {
             try {
                 const res = await fetch("/api/blog");
                 const data = await res.json();
-                if (data.success && data.data.length > 0) {
-                    setPosts(data.data);
+                if (data.success) {
+                    // Merge real posts with mock posts to keep content rich
+                    const realPosts = data.data || [];
+                    const mergedPosts = [...realPosts, ...mockBlogPosts.filter(m => !realPosts.find((r: any) => r.title === m.title))];
+                    setPosts(mergedPosts);
                 } else {
                     setPosts(mockBlogPosts);
                 }

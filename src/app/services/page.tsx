@@ -6,42 +6,49 @@ import Link from "next/link";
 
 const services = [
     {
+        id: "web-dev",
         icon: Globe,
         title: "Web Development",
         description: "We design and develop modern, responsive, and high-performance websites for businesses, startups, schools, and organizations. Our websites are optimized for speed, security, and user experience.",
         features: ["Custom React/Next.js Apps", "E-commerce Solutions", "CMS Development", "SEO Optimization"]
     },
     {
+        id: "mobile-apps",
         icon: Smartphone,
         title: "Mobile App Development",
         description: "We build powerful and user-friendly mobile applications for Android and cross-platform devices. Our apps are designed to solve real-world problems and improve user engagement.",
         features: ["iOS & Android Apps", "React Native / Flutter", "App Backend Dev", "UI/UX for Mobile"]
     },
     {
+        id: "ui-ux",
         icon: Palette,
         title: "UI/UX Design",
         description: "We create visually appealing and user-friendly interfaces for websites and mobile applications, ensuring the best possible experience for users.",
         features: ["Wireframing & Prototyping", "User Research", "Visual Design", "Usability Testing"]
     },
     {
+        id: "software-dev",
         icon: Code,
         title: "Software Development",
         description: "We develop custom software systems such as school management systems, business management platforms, booking systems, and automation tools.",
         features: ["Custom CRM/ERP", "API Development", "Cloud Solutions", "Legacy Modernization"]
     },
     {
+        id: "graphic-design",
         icon: PenTool,
         title: "Graphic Design",
         description: "We design professional branding materials such as logos, marketing graphics, social media designs, and brand identity assets.",
         features: ["Brand Identity/Logo", "Marketing Materials", "Social Media Graphics", "Print Design"]
     },
     {
+        id: "cloud-solutions",
         icon: Globe, // Use Globe or a Cloud icon if available, but for now stick to existing or similar
         title: "Cloud Solutions",
         description: "We provide cloud-based infrastructure, hosting, and deployment solutions that help businesses scale their digital platforms efficiently and securely.",
         features: ["Cloud Infrastructure", "Hosting & SSL", "Secure Deployment", "Scalable Systems"]
     },
     {
+        id: "ai-data",
         icon: Smartphone, // Use a generic icon for AI
         title: "AI & Data Science",
         description: "We develop intelligent systems that use data analysis, machine learning, and automation to help businesses make smarter decisions and improve efficiency.",
@@ -83,7 +90,8 @@ export default function Services() {
                         {services.map((service, index) => (
                             <motion.div
                                 key={index}
-                                className="bg-white/5 backdrop-blur-md p-8 rounded-2xl border border-white/10 transition-all group flex flex-col items-start hover:border-[#EAB308]/50 hover:bg-white/10 hover:shadow-[0_0_30px_rgba(234,179,8,0.1)]"
+                                id={service.id}
+                                className="bg-white/5 backdrop-blur-md p-8 rounded-2xl border border-white/10 transition-all group flex flex-col items-start hover:border-[#EAB308]/50 hover:bg-white/10 hover:shadow-[0_0_30px_rgba(234,179,8,0.1)] scroll-mt-24"
                                 whileHover={{ y: -5 }}
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
