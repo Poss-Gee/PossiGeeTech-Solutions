@@ -86,6 +86,10 @@ export default function UsersManager() {
         } catch (error) {
             setToast({ message: "Failed to delete user", type: "error" });
         }
+    const startEdit = (user: any) => {
+        setNewUser({ name: user.name, email: user.email, role: user.role });
+        setShowInviteModal(true);
+        // We'll treat this as "invite" for now but we could add update logic later
     };
 
     return (
@@ -141,7 +145,12 @@ export default function UsersManager() {
                                 </td>
                                 <td className="px-6 py-4 text-right">
                                     <div className="flex justify-end gap-3">
-                                        <button className="p-2 hover:text-[#EAB308] transition-colors"><Edit2 className="w-4 h-4" /></button>
+                                        <button 
+                                            onClick={() => startEdit(user)}
+                                            className="p-2 hover:text-[#EAB308] transition-colors"
+                                        >
+                                            <Edit2 className="w-4 h-4" />
+                                        </button>
                                         <button 
                                             onClick={() => handleDelete(user._id, user.id === "1" || user._id === "1")}
                                             className="p-2 hover:text-red-500 transition-colors"
@@ -154,7 +163,77 @@ export default function UsersManager() {
                         ))}
                     </tbody>
                 </table>
-            </div>
+            {showInviteModal && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="bg-[#1A1A1A] border border-white/10 p-8 rounded-2xl w-full max-w-md shadow-2xl"
+                    >
+                        <h3 className="text-2xl font-bold text-white mb-6">Invite New Member</h3>
+                        <form onSubmit={handleInvite} className="space-y-4">
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-gray-400">Full Name</label>
+                                <input 
+                                    type="text" 
+                                    required
+                                    value={newUser.name}
+                                    onChange={(e) => setNewUser({...newUser, name: e.target.value})}
+                                    className="w-full bg-white/5 border border-white/10 rounded-md px-4 py-3 text-white focus:outline-none focus:border-[#EAB308]"
+                                    placeholder="e.g. Ofori Michael"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-gray-400">Email Address</label>
+                                <input 
+                                    type="email" 
+                                    required
+                                    value={newUser.email}
+                                    onChange={(e) => setNewUser({...newUser, email: e.target.value})}
+                                    className="w-full bg-white/5 border border-white/10 rounded-md px-4 py-3 text-white focus:outline-none focus:border-[#EAB308]"
+                                    placeholder="ofori@possigeetech.com"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-gray-400">Role</label>
+                                <select 
+                                    value={newUser.role}
+                                    onChange={(e) => setNewUser({...newUser, role: e.target.value})}
+                                    className="w-full bg-white/5 border border-white/10 rounded-md px-4 py-3 text-white focus:outline-none focus:border-[#EAB308]"
+                                >
+                                    <option value="Editor">Editor</option>
+                                    <option value="Admin">Admin</option>
+                                </select>
+                            </div>
+                            <div className="flex gap-4 mt-8">
+                                <button 
+                                    type="button"
+                                    onClick={() => setShowInviteModal(false)}
+                                    className="flex-1 px-4 py-3 bg-white/5 text-white font-bold rounded-md hover:bg-white/10 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="submit"
+                                    disabled={saving}
+                                    className="flex-1 px-4 py-3 bg-[#EAB308] text-black font-bold rounded-md hover:bg-[#CA8A04] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                                >
+                                    {saving && <Loader2 className="w-4 h-4 animate-spin" />}
+                                    Send Invite
+                                </button>
+                            </div>
+                        </form>
+                    </motion.div>
+                </div>
+            )}
+
+            {toast && (
+                <Toast 
+                    message={toast.message} 
+                    type={toast.type} 
+                    onClose={() => setToast(null)} 
+                />
+            )}
         </div>
     );
 }
