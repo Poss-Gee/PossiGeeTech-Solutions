@@ -12,6 +12,8 @@ export async function GET() {
         const latestMessages = await Contact.find().sort({ createdAt: -1 }).limit(5);
 
         return NextResponse.json({
+            success: true,
+            connected: true,
             stats: {
                 messages: messageCount,
                 subscribers: subscriberCount,
@@ -21,6 +23,10 @@ export async function GET() {
         });
     } catch (error: any) {
         console.error("Dashboard data fetch failed:", error.message);
-        return NextResponse.json({ error: "Failed to fetch dashboard data" }, { status: 500 });
+        return NextResponse.json({ 
+            success: false, 
+            connected: false,
+            error: "Failed to connect to database" 
+        }, { status: 500 });
     }
 }

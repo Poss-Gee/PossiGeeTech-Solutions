@@ -32,6 +32,7 @@ export default function AdminDashboard() {
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [messages, setMessages] = useState<AdminMessage[]>([]);
     const [loading, setLoading] = useState(true);
+    const [connected, setConnected] = useState<boolean | null>(null); // null = unknown, false = error, true = connected
     const [selectedMessage, setSelectedMessage] = useState<AdminMessage | null>(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -40,12 +41,19 @@ export default function AdminDashboard() {
             try {
                 const res = await fetch("/api/admin/stats");
                 const data = await res.json();
-                if (data.stats) {
+                
+                if (data.success && data.connected) {
+                    setConnected(true);
                     setStats(data.stats);
                     setMessages(data.messages || []);
+                } else {
+                    setConnected(false);
+                    setStats({ messages: 0, subscribers: 0, proposals: 0 });
+                    setMessages([]);
                 }
             } catch (error) {
                 console.error("Failed to fetch dashboard data:", error);
+                setConnected(false);
                 setStats({ messages: 0, subscribers: 0, proposals: 0 });
                 setMessages([]);
             } finally {
@@ -209,6 +217,27 @@ export default function AdminDashboard() {
                                 </div>
                             </div>
                         </header>
+                        
+                        {/* Connection Status Banners */}
+                        {connected === false && (
+                            <div className="mb-8 p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3 text-red-400">
+                                <AlertCircle className="w-5 h-5 animate-pulse" />
+                                <div className="flex-1">
+                                    <p className="font-bold text-sm">Database Connection Failed (Production)</p>
+                                    <p className="text-xs text-red-300/80">Check your Vercel settings to ensure the <span className="font-mono bg-red-500/20 px-1 rounded">MONGODB_URI</span> environment variable is correctly set.</p>
+                                </div>
+                            </div>
+                        )}
+
+                        {connected === true && (stats?.messages === 0 && stats?.subscribers === 0) && (
+                            <div className="mb-8 p-4 bg-[#EAB308]/10 border border-[#EAB308]/20 rounded-xl flex items-center gap-3 text-[#EAB308]">
+                                <CheckCircle2 className="w-5 h-5" />
+                                <div className="flex-1">
+                                    <p className="font-bold text-sm">Database Connected (No Content Found)</p>
+                                    <p className="text-sm opacity-80">Your database is connected, but it's currently empty. Once you add real blogs or receive messages, they will appear here.</p>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Stats */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
