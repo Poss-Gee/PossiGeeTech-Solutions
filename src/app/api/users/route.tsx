@@ -1,13 +1,17 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import AdminUser from "@/models/AdminUser";
+import { Resend } from "resend";
+import { InviteEmail } from "@/components/emails/InviteEmail";
+import crypto from "crypto";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function GET() {
     try {
         await dbConnect();
         const users = await AdminUser.find({}).sort({ createdAt: -1 });
         
-        // If no users, return mock data for now so it's not empty
         if (users.length === 0) {
             return NextResponse.json({ 
                 success: true, 
@@ -28,9 +32,34 @@ export async function POST(req: Request) {
     try {
         await dbConnect();
         const body = await req.json();
-        const newUser = await AdminUser.create(body);
+        
+        // Generate a unique token for the invitation
+        const inviteToken = crypto.randomBytes(32).toString("hex");
+        
+        const userData = {
+            ...body,
+            status: "Pending",
+            inviteToken,
+        };
+
+        const newUser = await AdminUser.create(userData);
+
+        // Send the invitation email
+        if (process.env.RESEND_API_KEY) {
+            const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+            const inviteLink = `${baseUrl}/admin/setup-password/${inviteToken}`;
+
+            await resend.emails.send({
+                from: "PossiGeeTech <onboarding@resend.dev>", // Replace with your verified domain
+                to: newUser.email,
+                subject: "You've been invited to join the PossiGeeTech Team",
+                react: <InviteEmail name={newUser.name} inviteLink={inviteLink} companyName="PossiGeeTech" />,
+            });
+        }
+
         return NextResponse.json({ success: true, data: newUser }, { status: 201 });
     } catch (error: any) {
+        console.error("Invitation error:", error);
         return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 }
