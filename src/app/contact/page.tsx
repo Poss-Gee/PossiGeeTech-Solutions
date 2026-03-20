@@ -14,28 +14,39 @@ export default function Contact() {
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
         setSubmitStatus("idle");
+        setErrorMessage(null);
 
         try {
-            // Simulate API call, we'll implement actual API later
             const res = await fetch("/api/contact", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData)
             });
 
+            const data = await res.json();
+
             if (res.ok) {
                 setSubmitStatus("success");
                 setFormData({ name: "", email: "", phone: "", projectType: "web", message: "" });
             } else {
                 setSubmitStatus("error");
+                if (data.type === "DATABASE_CONNECTION_ERROR") {
+                    setErrorMessage("Database connection issue. This is usually due to IP whitelisting. Please check your Atlas settings.");
+                } else {
+                    setErrorMessage(data.message || "An unexpected error occurred. Please try again later.");
+                }
+                console.error("Submission error:", data);
             }
-        } catch (error) {
+        } catch (error: any) {
             setSubmitStatus("error");
+            setErrorMessage("Network error. Please check your internet connection.");
+            console.error("Network or parsing error:", error);
         } finally {
             setIsSubmitting(false);
         }
@@ -220,7 +231,7 @@ export default function Contact() {
                                 )}
                                 {submitStatus === "error" && (
                                     <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-md text-red-400 text-sm text-center">
-                                        Oops! Something went wrong. Please try again later.
+                                        {errorMessage || "Oops! Something went wrong. Please try again later."}
                                     </div>
                                 )}
                             </form>

@@ -57,9 +57,26 @@ export async function POST(req: Request) {
         );
 
     } catch (error: any) {
-        console.error("API error /api/contact:", error.message);
+        // Detailed server-side logging for debugging
+        console.error("CRITICAL: API error in /api/contact:", {
+            message: error.message,
+            stack: error.stack,
+            timestamp: new Date().toISOString()
+        });
+
+        // Determine error type for client feedback (internal use)
+        let errorType = "SERVER_ERROR";
+        if (error.name === "MongooseServerSelectionError" || error.message.includes("ReplicaSetNoPrimary")) {
+            errorType = "DATABASE_CONNECTION_ERROR";
+            console.error("HINT: This error is often caused by IP whitelisting issues in MongoDB Atlas.");
+        }
+
         return NextResponse.json(
-            { error: "Failed to process request", message: error.message },
+            { 
+                error: "Failed to process request", 
+                message: error.message,
+                type: errorType
+            },
             { status: 500 }
         );
     }
