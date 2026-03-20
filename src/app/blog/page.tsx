@@ -200,6 +200,11 @@ export default function BlogListing() {
                             posts.slice(1).map((post: any, index: number) => (
                             <motion.div
                                 key={post.id}
+                                className="bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden flex flex-col hover:border-[#EAB308]/50 hover:bg-white/10 transition-all group"
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5, delay: index * 0.1 }}
                             >
                                 {post.imageUrl && (
                                     <div className="relative aspect-[16/10] overflow-hidden border-b border-white/10">
